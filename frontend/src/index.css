@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  background: #070a0e;
+  color: #e8ecf2;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #3ddc9755;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e2632;
+  border-radius: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* The dashed predicted-trajectory flow. Tailwind's `animate-dash` keyframe
+   drives stroke-dashoffset; this class is used directly on <path> elements. */
+.traj-flow {
+  animation: ehp-dash 3s linear infinite;
+}
+
+@keyframes ehp-dash {
+  to {
+    stroke-dashoffset: -220;
+  }
+}

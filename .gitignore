@@ -1,0 +1,28 @@
+# ---- Python / backend ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+backend/data/keypoints/
+backend/data/splits/
+backend/data/manifest.csv
+backend/ml/weights/
+backend/uploads/
+
+# ---- Node / frontend ----
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.local
+
+# ---- OS / editor ----
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# ---- misc ----
+*.log
+Design questions answered.zip

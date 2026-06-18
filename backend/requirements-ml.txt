@@ -1,0 +1,7 @@
+# Optional ML dependencies. The backend runs fully in demo mode WITHOUT these;
+# install them only when wiring up real models / keypoint extraction.
+numpy>=1.24
+torch>=2.1
+onnxruntime>=1.17
+opencv-python>=4.9
+mediapipe>=0.10   # keypoint extraction; gracefully skipped if unavailable

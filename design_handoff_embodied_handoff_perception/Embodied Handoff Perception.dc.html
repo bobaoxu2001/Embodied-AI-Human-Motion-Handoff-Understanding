@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:#070a0e;font-family:'Space Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  ::selection{background:#3ddc9755}
+  @keyframes ehp-dash{to{stroke-dashoffset:-220}}
+  @keyframes ehp-pulse{0%,100%{opacity:.45}50%{opacity:1}}
+  @keyframes ehp-blink{0%,100%{opacity:1}50%{opacity:.25}}
+  @keyframes ehp-glow{0%,100%{box-shadow:0 0 0 0 #3ddc9700}50%{box-shadow:0 0 22px 0 #3ddc9733}}
+  @keyframes ehp-scan{0%{transform:translateY(-100%)}100%{transform:translateY(900%)}}
+  @keyframes ehp-spin{to{transform:rotate(360deg)}}
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-thumb{background:#1e2632;border-radius:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+</style>
+</helmet>
+
+<div style="min-height:100vh;width:100%;background:#070a0e;color:#e8ecf2;overflow:hidden">
+
+<!-- ============================ LANDING ============================ -->
+<sc-if value="{{ landingActive }}" hint-placeholder-val="{{ true }}">
+<div style="min-height:100vh;background:radial-gradient(1200px 600px at 78% -10%,#0e1b2433,transparent),#070a0e;background-image:linear-gradient(#ffffff07 1px,transparent 1px),linear-gradient(90deg,#ffffff07 1px,transparent 1px);background-size:auto,46px 46px,46px 46px;background-position:0 0,0 0,0 0">
+
+  <header style="display:flex;align-items:center;justify-content:space-between;padding:20px 40px;border-bottom:1px solid #141a23;max-width:1280px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:13px">
+      <div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#4d9fff,#3ddc97);display:flex;align-items:center;justify-content:center;position:relative">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2.4" fill="#08110c"/><path d="M12 8.5v5M12 13.5l-5 4M12 13.5l5 4M7 11l5 1.5 5-1.5" stroke="#08110c" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </div>
+      <div style="display:flex;flex-direction:column;line-height:1.1">
+        <span style="font-size:15px;font-weight:600;letter-spacing:-.01em">Embodied Handoff Perception</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#5c6675;letter-spacing:.04em">perception-stack · v0.4.1</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onClick="{{ goInspector }}" style="background:transparent;border:1px solid #232b38;color:#9aa4b2;font-family:'Space Grotesk';font-size:13px;font-weight:500;padding:9px 16px;border-radius:8px;cursor:pointer">Model card</button>
+      <button onClick="{{ goVideo }}" style="background:#4d9fff;border:1px solid #4d9fff;color:#06121f;font-family:'Space Grotesk';font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;cursor:pointer">Launch dashboard →</button>
+    </div>
+  </header>
+
+  <div style="max-width:1280px;margin:0 auto;padding:54px 40px 30px;display:grid;grid-template-columns:1fr 1.15fr;gap:54px;align-items:center">
+    <!-- left copy -->
+    <div>
+      <div style="display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#3ddc97;border:1px solid #18372a;background:#0c1812;padding:6px 11px;border-radius:20px;margin-bottom:22px;white-space:nowrap">
+        <span style="width:6px;height:6px;border-radius:50%;background:#3ddc97;animation:ehp-pulse 1.6s ease-in-out infinite"></span> human-robot interaction
+      </div>
+      <h1 style="font-size:46px;line-height:1.08;letter-spacing:-.025em;font-weight:600;margin:0 0 20px">Real-time 3D human pose tracking and handoff intent recognition.</h1>
+      <p style="font-size:17px;line-height:1.55;color:#9aa4b2;margin:0 0 26px;max-width:520px">A perception stack that reads RGB video of a person interacting with an object — tracking 2D/3D body &amp; hand pose, forecasting the hand trajectory, recognizing actions, and deciding whether the person intends to hand the object to a robot.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:30px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#cfe0ff;background:#0e1826;border:1px solid #1c2c44;padding:6px 11px;border-radius:6px">3D Vision</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#cfe0ff;background:#0e1826;border:1px solid #1c2c44;padding:6px 11px;border-radius:6px">Human Pose Tracking</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#cfe0ff;background:#0e1826;border:1px solid #1c2c44;padding:6px 11px;border-radius:6px">Video Understanding</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#c9ffe9;background:#0c1812;border:1px solid #18372a;padding:6px 11px;border-radius:6px">Embodied AI</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#9aa4b2;background:#11151c;border:1px solid #232b38;padding:6px 11px;border-radius:6px">PyTorch</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#9aa4b2;background:#11151c;border:1px solid #232b38;padding:6px 11px;border-radius:6px">FastAPI</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#9aa4b2;background:#11151c;border:1px solid #232b38;padding:6px 11px;border-radius:6px">ONNX</span>
+      </div>
+      <div style="display:flex;gap:34px;align-items:flex-end">
+        <div><div style="font-family:'JetBrains Mono',monospace;font-size:25px;font-weight:600;color:#e8ecf2">30<span style="font-size:13px;color:#5c6675"> fps</span></div><div style="font-size:11.5px;color:#5c6675;font-family:'JetBrains Mono',monospace">throughput</div></div>
+        <div><div style="font-family:'JetBrains Mono',monospace;font-size:25px;font-weight:600;color:#e8ecf2">33<span style="font-size:13px;color:#5c6675"> ms</span></div><div style="font-size:11.5px;color:#5c6675;font-family:'JetBrains Mono',monospace">latency p50</div></div>
+        <div><div style="font-family:'JetBrains Mono',monospace;font-size:25px;font-weight:600;color:#3ddc97">89.2<span style="font-size:13px;color:#5c6675"> %</span></div><div style="font-size:11.5px;color:#5c6675;font-family:'JetBrains Mono',monospace">intent acc</div></div>
+        <div><div style="font-family:'JetBrains Mono',monospace;font-size:25px;font-weight:600;color:#e8ecf2">52<span style="font-size:13px;color:#5c6675"> mm</span></div><div style="font-size:11.5px;color:#5c6675;font-family:'JetBrains Mono',monospace">traj ADE</div></div>
+      </div>
+      <div style="margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#5c6675;display:flex;align-items:center;gap:7px"><span style="width:6px;height:6px;border-radius:2px;background:#ff8a3d"></span>demo-mode · simulated inference on a 150-clip MVP set — not production benchmarks</div>
+    </div>
+
+    <!-- right hero viz -->
+    <div style="position:relative;border:1px solid #1c2533;border-radius:14px;overflow:hidden;background:#0a0d12;box-shadow:0 30px 80px -30px #000">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid #141a23;background:#0b0f15;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#5c6675;letter-spacing:.03em">
+        <span style="display:flex;align-items:center;gap:7px"><span style="width:6px;height:6px;border-radius:50%;background:#ff4d4d;animation:ehp-blink 1.4s infinite"></span>cam_00 · rgb · 1280×720 · 30fps</span>
+        <span style="color:#ff8a3d">inference: demo-mode</span>
+      </div>
+      <div style="position:relative;aspect-ratio:16/10;background:#0a0d12">
+        <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="ehp_hero_frame" placeholder="Drop a video frame (optional)" fit="cover" radius="0" style="position:absolute;inset:0;width:100%;height:100%;opacity:.9" hint-size="100%,100%"></x-import>
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,#0a0d1200,#0a0d1288);pointer-events:none"></div>
+        <!-- scan -->
+        <div style="position:absolute;left:0;right:0;top:0;height:46px;background:linear-gradient(180deg,#4d9fff22,transparent);pointer-events:none;animation:ehp-scan 4.5s linear infinite"></div>
+        <svg viewBox="0 0 640 400" preserveAspectRatio="xMidYMid meet" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none">
+          <!-- bones -->
+          <g stroke="#4d9fff" stroke-width="2.4" stroke-linecap="round" opacity=".92">
+            <line x1="250" y1="96" x2="252" y2="128"/>
+            <line x1="216" y1="138" x2="288" y2="134"/>
+            <line x1="252" y1="128" x2="216" y2="138"/><line x1="252" y1="128" x2="288" y2="134"/>
+            <line x1="216" y1="138" x2="200" y2="196"/><line x1="200" y1="196" x2="196" y2="250"/>
+            <line x1="288" y1="134" x2="344" y2="158"/><line x1="344" y1="158" x2="404" y2="182"/>
+            <line x1="252" y1="128" x2="254" y2="232"/>
+            <line x1="234" y1="234" x2="278" y2="230"/>
+            <line x1="254" y1="232" x2="234" y2="234"/><line x1="254" y1="232" x2="278" y2="230"/>
+            <line x1="234" y1="234" x2="228" y2="310"/><line x1="228" y1="310" x2="224" y2="380"/>
+            <line x1="278" y1="230" x2="282" y2="308"/><line x1="282" y1="308" x2="288" y2="376"/>
+          </g>
+          <!-- joints -->
+          <g fill="#7fbfff" stroke="#0a0d12" stroke-width="1">
+            <circle cx="252" cy="128" r="3.4"/><circle cx="216" cy="138" r="3.4"/><circle cx="288" cy="134" r="3.4"/>
+            <circle cx="200" cy="196" r="3.4"/><circle cx="196" cy="250" r="3.4"/>
+            <circle cx="344" cy="158" r="3.4"/>
+            <circle cx="254" cy="232" r="3.4"/><circle cx="234" cy="234" r="3.4"/><circle cx="278" cy="230" r="3.4"/>
+            <circle cx="228" cy="310" r="3.4"/><circle cx="224" cy="380" r="3.4"/><circle cx="282" cy="308" r="3.4"/><circle cx="288" cy="376" r="3.4"/>
+          </g>
+          <circle cx="250" cy="86" r="13" fill="none" stroke="#4d9fff" stroke-width="2.2"/>
+          <!-- active wrist -->
+          <circle cx="404" cy="182" r="8" fill="none" stroke="#3ddc97" stroke-width="2" style="animation:ehp-pulse 1.3s infinite"/>
+          <circle cx="404" cy="182" r="3.6" fill="#3ddc97"/>
+          <!-- hand landmarks -->
+          <g fill="#c98bff">
+            <circle cx="420" cy="170" r="2"/><circle cx="430" cy="174" r="2"/><circle cx="434" cy="183" r="2"/><circle cx="431" cy="193" r="2"/><circle cx="422" cy="198" r="2"/>
+          </g>
+          <g stroke="#c98bff" stroke-width="1.2" opacity=".7"><line x1="404" y1="182" x2="420" y2="170"/><line x1="404" y1="182" x2="430" y2="174"/><line x1="404" y1="182" x2="434" y2="183"/><line x1="404" y1="182" x2="431" y2="193"/><line x1="404" y1="182" x2="422" y2="198"/></g>
+          <!-- object bbox -->
+          <rect x="396" y="150" width="62" height="66" rx="2" fill="none" stroke="#ff8a3d" stroke-width="1.8" stroke-dasharray="5 4"/>
+          <text x="396" y="144" font-family="JetBrains Mono" font-size="11" fill="#ff8a3d">object · cup 0.97</text>
+          <!-- predicted trajectory -->
+          <path d="M404 182 C 470 148, 520 196, 574 222" fill="none" stroke="#3ddc97" stroke-width="2.4" stroke-dasharray="6 7" stroke-linecap="round" style="animation:ehp-dash 3s linear infinite"/>
+          <g><circle cx="574" cy="222" r="6" fill="none" stroke="#3ddc97" stroke-width="2"/><line x1="566" y1="222" x2="582" y2="222" stroke="#3ddc97" stroke-width="1.4"/><line x1="574" y1="214" x2="574" y2="230" stroke="#3ddc97" stroke-width="1.4"/></g>
+          <text x="556" y="246" font-family="JetBrains Mono" font-size="10.5" fill="#3ddc97">target t+1.0s</text>
+        </svg>
+        <!-- decision card -->
+        <div style="position:absolute;right:14px;bottom:14px;background:#0b140fee;border:1px solid #1c4533;border-radius:10px;padding:12px 14px;min-width:206px;backdrop-filter:blur(6px);animation:ehp-glow 2.6s ease-in-out infinite">
+          <div style="display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#3ddc97;margin-bottom:7px"><span style="width:6px;height:6px;border-radius:50%;background:#3ddc97;animation:ehp-pulse 1.2s infinite"></span>handoff intent</div>
+          <div style="display:flex;align-items:baseline;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:600;color:#fff;line-height:1">0.94</span><span style="font-size:12px;color:#3ddc97">detected</span></div>
+          <div style="margin-top:8px;font-size:12px;color:#9aa4b2">Robot → <span style="color:#e8ecf2;font-weight:500">extend gripper · open</span></div>
+        </div>
+        <!-- corner ticks -->
+        <div style="position:absolute;left:10px;top:34px;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#4d9fff99">frame 0142</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- pipeline ribbon -->
+  <div style="max-width:1280px;margin:0 auto;padding:18px 40px 70px">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#5c6675;margin-bottom:14px">inference pipeline</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+      <div onClick="{{ goInspector }}" style="cursor:pointer;border:1px solid #1c2533;background:#0b0f15;border-radius:11px;padding:15px 16px;position:relative"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#4d9fff">01</div><div style="font-size:14.5px;font-weight:600;margin:7px 0 3px">Pose extraction</div><div style="font-size:12px;color:#8a93a3;line-height:1.4">2D body + hand keypoints</div></div>
+      <div onClick="{{ goInspector }}" style="cursor:pointer;border:1px solid #1c2533;background:#0b0f15;border-radius:11px;padding:15px 16px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#4d9fff">02</div><div style="font-size:14.5px;font-weight:600;margin:7px 0 3px">2D→3D lifting</div><div style="font-size:12px;color:#8a93a3;line-height:1.4">Root-relative 3D joints</div></div>
+      <div onClick="{{ goInspector }}" style="cursor:pointer;border:1px solid #1c2533;background:#0b0f15;border-radius:11px;padding:15px 16px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7c5cff">03</div><div style="font-size:14.5px;font-weight:600;margin:7px 0 3px">Action recognition</div><div style="font-size:12px;color:#8a93a3;line-height:1.4">Temporal pose → 6 actions</div></div>
+      <div onClick="{{ goInspector }}" style="cursor:pointer;border:1px solid #1c2533;background:#0b0f15;border-radius:11px;padding:15px 16px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#3ddc97">04</div><div style="font-size:14.5px;font-weight:600;margin:7px 0 3px">Trajectory forecast</div><div style="font-size:12px;color:#8a93a3;line-height:1.4">1.0s future hand path</div></div>
+      <div onClick="{{ goInspector }}" style="cursor:pointer;border:1px solid #1c4533;background:#0b140f;border-radius:11px;padding:15px 16px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#3ddc97">05</div><div style="font-size:14.5px;font-weight:600;margin:7px 0 3px">Handoff intent</div><div style="font-size:12px;color:#8a93a3;line-height:1.4">Binary intent + confidence</div></div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============================ TOOL SHELL ============================ -->
+<sc-if value="{{ toolActive }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;min-height:100vh">
+  <!-- sidebar -->
+  <aside style="width:236px;flex:none;background:#080b0f;border-right:1px solid #141a23;display:flex;flex-direction:column;padding:16px 14px">
+    <div onClick="{{ goLanding }}" style="display:flex;align-items:center;gap:11px;padding:6px 8px 16px;cursor:pointer">
+      <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#4d9fff,#3ddc97);display:flex;align-items:center;justify-content:center;flex:none">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2.4" fill="#08110c"/><path d="M12 8.5v5M12 13.5l-5 4M12 13.5l5 4M7 11l5 1.5 5-1.5" stroke="#08110c" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </div>
+      <div style="line-height:1.15;white-space:nowrap"><div style="font-size:13px;font-weight:600">Handoff Perception</div><div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#5c6675">v0.4.1 · gpu</div></div>
+    </div>
+
+    <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#404a59;padding:6px 10px 8px">WORKSPACE</div>
+    <nav style="display:flex;flex-direction:column;gap:3px">
+      <div onClick="{{ goVideo }}" style="{{ nav.video.rowStyle }}"><span style="{{ nav.video.barStyle }}"></span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{ nav.video.iconColor }}" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3z" fill="{{ nav.video.iconColor }}" stroke="none"/></svg>Video analysis</div>
+      <div onClick="{{ goPose }}" style="{{ nav.pose3d.rowStyle }}"><span style="{{ nav.pose3d.barStyle }}"></span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{ nav.pose3d.iconColor }}" stroke-width="1.8"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 3v18M4 7.5l8 4.5 8-4.5"/></svg>3D pose viewer</div>
+      <div onClick="{{ goInspector }}" style="{{ nav.inspector.rowStyle }}"><span style="{{ nav.inspector.barStyle }}"></span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{ nav.inspector.iconColor }}" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Model inspector</div>
+      <div onClick="{{ goDataset }}" style="{{ nav.dataset.rowStyle }}"><span style="{{ nav.dataset.barStyle }}"></span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{ nav.dataset.iconColor }}" stroke-width="1.8"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>Dataset &amp; eval</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#404a59;padding:15px 10px 8px">HANDOFF</div>
+      <div onClick="{{ goHandoff }}" style="{{ nav.handoff.rowStyle }}"><span style="{{ nav.handoff.barStyle }}"></span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{ nav.handoff.iconColor }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>Implementation handoff</div>
+    </nav>
+
+    <div style="margin-top:auto;border-top:1px solid #141a23;padding-top:12px">
+      <div style="background:#0b0f15;border:1px solid #18222e;border-radius:9px;padding:11px 12px">
+        <div style="display:flex;align-items:center;gap:7px;font-size:11.5px;color:#3ddc97;margin-bottom:8px"><span style="width:6px;height:6px;border-radius:50%;background:#3ddc97;animation:ehp-pulse 1.6s infinite"></span>inference online</div>
+        <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#5c6675"><span>gpu · cuda 12</span><span style="color:#9aa4b2">30 fps</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- main -->
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column;background:radial-gradient(900px 500px at 100% -20%,#0e1b2422,transparent),#080b0f">
+    <header style="display:flex;align-items:center;justify-content:space-between;padding:16px 26px;border-bottom:1px solid #141a23">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;color:#5c6675;margin-bottom:4px;white-space:nowrap">{{ screenCrumb }}</div>
+        <h2 style="margin:0;font-size:19px;font-weight:600;letter-spacing:-.01em">{{ screenTitle }}</h2>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="display:flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.08em;color:#ff8a3d;background:#1a1208;border:1px solid #3a2a14;padding:7px 11px;border-radius:8px"><span style="width:6px;height:6px;border-radius:2px;background:#ff8a3d;animation:ehp-pulse 1.8s infinite"></span>DEMO MODE</div>
+        <div style="display:flex;align-items:center;gap:9px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#9aa4b2;background:#0b0f15;border:1px solid #18222e;padding:7px 12px;border-radius:8px">
+          <span onClick="{{ togglePlay }}" style="cursor:pointer;color:#4d9fff;width:14px;display:inline-block;text-align:center">{{ playGlyph }}</span>
+          <span>{{ timecode }}</span><span style="color:#404a59">|</span><span style="color:#5c6675">{{ frameLabel }}</span>
+        </div>
+        <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1c2c44,#0e1826);border:1px solid #232b38"></div>
+      </div>
+    </header>
+
+    <div style="flex:1;overflow-y:auto;padding:24px 26px 40px">
+
+      <!-- ===== VIDEO ANALYSIS ===== -->
+      <sc-if value="{{ videoActive }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:18px">
+          <!-- video panel -->
+          <div style="border:1px solid #1c2533;border-radius:13px;overflow:hidden;background:#0a0d12">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid #141a23;background:#0b0f15;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#5c6675"><span style="display:flex;align-items:center;gap:7px"><span style="width:6px;height:6px;border-radius:50%;background:#ff4d4d;animation:ehp-blink 1.4s infinite"></span>handoff_clip_07.mp4 · 1280×720</span><span>overlays: skeleton · hands · bbox · traj</span></div>
+            <div style="position:relative;aspect-ratio:16/10">
+              <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="ehp_video_frame" placeholder="Drop a video frame (optional)" fit="cover" radius="0" style="position:absolute;inset:0;width:100%;height:100%;opacity:.9" hint-size="100%,100%"></x-import>
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,#0a0d1200,#0a0d1288);pointer-events:none"></div>
+              <svg viewBox="0 0 640 400" preserveAspectRatio="xMidYMid meet" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none">
+                <g transform="{{ pose.bodyT }}">
+                  <g stroke="#4d9fff" stroke-width="2.4" stroke-linecap="round" opacity=".92">
+                    <line x1="250" y1="96" x2="252" y2="128"/><line x1="216" y1="138" x2="288" y2="134"/><line x1="252" y1="128" x2="216" y2="138"/><line x1="252" y1="128" x2="288" y2="134"/><line x1="216" y1="138" x2="200" y2="196"/><line x1="200" y1="196" x2="196" y2="250"/><line x1="252" y1="128" x2="254" y2="232"/><line x1="234" y1="234" x2="278" y2="230"/><line x1="254" y1="232" x2="234" y2="234"/><line x1="254" y1="232" x2="278" y2="230"/><line x1="234" y1="234" x2="228" y2="310"/><line x1="228" y1="310" x2="224" y2="380"/><line x1="278" y1="230" x2="282" y2="308"/><line x1="282" y1="308" x2="288" y2="376"/>
+                    <line x1="288" y1="134" x2="{{ pose.relbow.x }}" y2="{{ pose.relbow.y }}"/><line x1="{{ pose.relbow.x }}" y1="{{ pose.relbow.y }}" x2="{{ pose.rwrist.x }}" y2="{{ pose.rwrist.y }}"/>
+                  </g>
+                  <g fill="#7fbfff" stroke="#0a0d12" stroke-width="1"><circle cx="252" cy="128" r="3.4"/><circle cx="216" cy="138" r="3.4"/><circle cx="288" cy="134" r="3.4"/><circle cx="200" cy="196" r="3.4"/><circle cx="196" cy="250" r="3.4"/><circle cx="254" cy="232" r="3.4"/><circle cx="234" cy="234" r="3.4"/><circle cx="278" cy="230" r="3.4"/><circle cx="228" cy="310" r="3.4"/><circle cx="224" cy="380" r="3.4"/><circle cx="282" cy="308" r="3.4"/><circle cx="288" cy="376" r="3.4"/><circle cx="{{ pose.relbow.x }}" cy="{{ pose.relbow.y }}" r="3.4"/></g>
+                  <circle cx="250" cy="86" r="13" fill="none" stroke="#4d9fff" stroke-width="2.2"/>
+                  <circle cx="{{ pose.rwrist.x }}" cy="{{ pose.rwrist.y }}" r="8" fill="none" stroke="#3ddc97" stroke-width="2" style="animation:ehp-pulse 1.3s infinite"/><circle cx="{{ pose.rwrist.x }}" cy="{{ pose.rwrist.y }}" r="3.6" fill="#3ddc97"/>
+                  <g fill="#c98bff" transform="translate({{ pose.rwrist.x }} {{ pose.rwrist.y }})"><circle cx="16" cy="-12" r="2"/><circle cx="26" cy="-8" r="2"/><circle cx="30" cy="1" r="2"/><circle cx="27" cy="11" r="2"/><circle cx="18" cy="16" r="2"/></g>
+                  <g stroke="#c98bff" stroke-width="1.2" opacity=".7" transform="translate({{ pose.rwrist.x }} {{ pose.rwrist.y }})"><line x1="0" y1="0" x2="16" y2="-12"/><line x1="0" y1="0" x2="26" y2="-8"/><line x1="0" y1="0" x2="30" y2="1"/><line x1="0" y1="0" x2="27" y2="11"/><line x1="0" y1="0" x2="18" y2="16"/></g>
+                  <g transform="translate({{ pose.obj.x }} {{ pose.obj.y }})"><rect x="0" y="0" width="62" height="66" rx="2" fill="none" stroke="#ff8a3d" stroke-width="1.8" stroke-dasharray="5 4"/><text x="0" y="-6" font-family="JetBrains Mono" font-size="11" fill="#ff8a3d">cup 0.97</text></g>
+                  <path d="{{ pose.traj }}" fill="none" stroke="#3ddc97" stroke-width="2.4" stroke-dasharray="6 7" stroke-linecap="round" style="animation:ehp-dash 3s linear infinite"/>
+                  <g transform="translate({{ pose.future.x }} {{ pose.future.y }})"><circle r="6" fill="none" stroke="#3ddc97" stroke-width="2"/><line x1="-8" y1="0" x2="8" y2="0" stroke="#3ddc97" stroke-width="1.4"/><line x1="0" y1="-8" x2="0" y2="8" stroke="#3ddc97" stroke-width="1.4"/></g>
+                </g>
+              </svg>
+              <div style="position:absolute;left:12px;top:34px;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#4d9fff99">{{ frameLabel }}</div>
+            </div>
+            <!-- transport -->
+            <div style="display:flex;align-items:center;gap:13px;padding:11px 14px;border-top:1px solid #141a23;background:#0b0f15">
+              <span onClick="{{ togglePlay }}" style="cursor:pointer;width:30px;height:30px;border-radius:7px;background:#4d9fff;color:#06121f;display:flex;align-items:center;justify-content:center;font-size:12px;flex:none">{{ playGlyph }}</span>
+              <div onMouseDown="{{ seekStart }}" onTouchStart="{{ seekStart }}" style="flex:1;height:16px;display:flex;align-items:center;position:relative;cursor:pointer"><div style="position:absolute;left:0;right:0;height:5px;border-radius:4px;background:#1a222e"></div><div style="position:absolute;left:0;height:5px;border-radius:4px;background:linear-gradient(90deg,#4d9fff,#3ddc97);width:{{ framePct }}%"></div><div style="position:absolute;top:50%;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid #4d9fff;left:{{ framePct }}%;transform:translate(-50%,-50%)"></div></div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#9aa4b2">{{ timecode }} / 00:10.6</span>
+            </div>
+          </div>
+
+          <!-- inference cards -->
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:15px 16px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#5c6675;margin-bottom:10px">current action</div>
+              <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:27px;font-weight:600;letter-spacing:-.01em;color:{{ currentActionColor }}">{{ currentActionLabel }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:#9aa4b2">{{ currentActionConf }}</span></div>
+              <div style="display:flex;gap:5px;margin-top:12px">
+                <span style="{{ chip.idle }}">idle</span><span style="{{ chip.reaching }}">reach</span><span style="{{ chip.grasping }}">grasp</span><span style="{{ chip.handoff }}">handoff</span><span style="{{ chip.placing }}">place</span>
+              </div>
+            </div>
+
+            <div style="border:1px solid #1c4533;background:#0b140f;border-radius:12px;padding:15px 16px;animation:ehp-glow 2.8s ease-in-out infinite">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#3ddc97">handoff intent</span><span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:{{ intentStatusColor }}">{{ intentStatus }}</span></div>
+              <div style="display:flex;align-items:baseline;gap:9px"><span style="font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:600;line-height:1;color:#fff">{{ handoffConf2 }}</span><span style="font-size:13px;color:#9aa4b2">confidence</span></div>
+              <div style="margin-top:12px;height:7px;background:#0a1a12;border-radius:5px;overflow:hidden"><div style="height:100%;border-radius:5px;background:linear-gradient(90deg,#3ddc97,#7fffcf);width:{{ handoffConfPct }}%;transition:width .2s linear"></div></div>
+            </div>
+
+            <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:15px 16px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#5c6675;margin-bottom:9px">future hand target · t+1.0s</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:15px;color:#e8ecf2">{{ futureTarget }}</div>
+              <div style="display:flex;justify-content:space-between;margin-top:9px;font-size:11.5px;color:#5c6675;font-family:'JetBrains Mono',monospace"><span>ADE 52mm</span><span>FDE 96mm</span><span>horizon 30f</span></div>
+            </div>
+
+            <div style="border:1px solid #1c2c44;background:#0a111c;border-radius:12px;padding:15px 16px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#4d9fff;margin-bottom:9px">suggested robot action</div>
+              <div style="display:flex;align-items:center;gap:11px"><div style="width:34px;height:34px;border-radius:8px;background:#0e1826;border:1px solid #1c2c44;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4d9fff" stroke-width="1.8"><path d="M6 11V7a2 2 0 012-2M6 11l-2 2 4 5h7l3-4v-5a2 2 0 00-4 0M10 11V5a2 2 0 014 0v6M14 11V8" stroke-linecap="round"/></svg></div><div><div style="font-size:15.5px;font-weight:600;color:#e8ecf2">{{ robotAction }}</div><div style="font-size:11.5px;color:#5c6675;font-family:'JetBrains Mono',monospace">{{ robotActionSub }}</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- timeline -->
+        <div style="margin-top:18px;border:1px solid #1c2533;background:#0b0f15;border-radius:13px;padding:16px 18px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#5c6675">segmented actions · temporal</span><span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#5c6675">6 segments · 320 frames</span></div>
+          <div onMouseDown="{{ seekStart }}" onTouchStart="{{ seekStart }}" style="position:relative;height:46px;border-radius:8px;overflow:hidden;background:#0a0d12;display:flex;cursor:pointer">
+            <sc-for list="{{ segments }}" as="seg" hint-placeholder-count="6">
+              <div style="height:100%;border-right:1px solid #0a0d12;display:flex;flex-direction:column;justify-content:center;padding-left:8px;width:{{ seg.width }};background:{{ seg.bg }};box-shadow:{{ seg.shadow }}">
+                <span style="font-size:11.5px;font-weight:600;color:{{ seg.color }}">{{ seg.label }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#5c6675">{{ seg.conf }}</span>
+              </div>
+            </sc-for>
+            <div style="position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 8px #fff;left:{{ framePct }}%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:7px;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#404a59"><span>00:00.0</span><span>00:05.3</span><span>00:10.6</span></div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ===== 3D POSE VIEWER ===== -->
+      <sc-if value="{{ pose3dActive }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:18px">
+        <div style="border:1px solid #1c2533;border-radius:13px;overflow:hidden;background:#070a0e">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid #141a23;background:#0b0f15;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#5c6675"><span>3d skeleton · root-relative · world frame</span><span>az {{ az }}° · el {{ el }}°</span></div>
+          <div style="position:relative;aspect-ratio:16/11;background:radial-gradient(700px 360px at 50% 30%,#0c141d,#070a0e)">
+            <svg viewBox="0 0 720 480" preserveAspectRatio="xMidYMid meet" style="position:absolute;inset:0;width:100%;height:100%">
+              <!-- floor grid -->
+              <g stroke="#16202c" stroke-width="1">
+                <path d="M120 430 L600 430"/><path d="M150 390 L570 390"/><path d="M178 352 L542 352"/><path d="M204 318 L516 318"/>
+                <path d="M120 430 L204 318"/><path d="M232 430 L286 318"/><path d="M360 430 L360 318"/><path d="M488 430 L434 318"/><path d="M600 430 L516 318"/>
+              </g>
+              <!-- ground shadow -->
+              <ellipse cx="360" cy="418" rx="86" ry="15" fill="#000" opacity=".5"/>
+              <!-- back bones (dim) -->
+              <g stroke="#2b5a8a" stroke-width="3" stroke-linecap="round" opacity=".55">
+                <line x1="330" y1="150" x2="300" y2="220"/><line x1="300" y1="220" x2="296" y2="290"/>
+                <line x1="330" y1="300" x2="318" y2="360"/><line x1="318" y1="360" x2="312" y2="416"/>
+              </g>
+              <!-- front bones -->
+              <g stroke="#4d9fff" stroke-width="3.4" stroke-linecap="round">
+                <line x1="358" y1="118" x2="360" y2="150"/>
+                <line x1="330" y1="150" x2="392" y2="150"/>
+                <line x1="392" y1="150" x2="448" y2="186"/><line x1="448" y1="186" x2="506" y2="214"/>
+                <line x1="360" y1="150" x2="362" y2="300"/>
+                <line x1="338" y1="300" x2="386" y2="298"/>
+                <line x1="386" y1="298" x2="396" y2="362"/><line x1="396" y1="362" x2="404" y2="418"/>
+              </g>
+              <g fill="#9fd0ff" stroke="#070a0e" stroke-width="1.4"><circle cx="360" cy="150" r="4.6"/><circle cx="330" cy="150" r="4.6"/><circle cx="392" cy="150" r="4.6"/><circle cx="448" cy="186" r="4.6"/><circle cx="362" cy="300" r="4.6"/><circle cx="338" cy="300" r="4.6"/><circle cx="386" cy="298" r="4.6"/><circle cx="396" cy="362" r="4.6"/><circle cx="404" cy="418" r="4.6"/><circle cx="318" cy="360" r="4" fill="#2b5a8a"/><circle cx="312" cy="416" r="4" fill="#2b5a8a"/></g>
+              <circle cx="358" cy="100" r="17" fill="none" stroke="#4d9fff" stroke-width="3"/>
+              <!-- active wrist + hand -->
+              <circle cx="506" cy="214" r="9" fill="none" stroke="#3ddc97" stroke-width="2.4" style="animation:ehp-pulse 1.3s infinite"/><circle cx="506" cy="214" r="4" fill="#3ddc97"/>
+              <g fill="#c98bff"><circle cx="524" cy="200" r="2.4"/><circle cx="534" cy="208" r="2.4"/><circle cx="536" cy="218" r="2.4"/><circle cx="528" cy="226" r="2.4"/></g>
+              <!-- past trajectory (solid) + future (dashed) -->
+              <path d="M448 250 C 470 235, 490 222, 506 214" fill="none" stroke="#4d9fff" stroke-width="2.4" opacity=".7"/>
+              <path d="M506 214 C 560 196, 600 220, 636 250" fill="none" stroke="#3ddc97" stroke-width="2.6" stroke-dasharray="6 7" stroke-linecap="round" style="animation:ehp-dash 3s linear infinite"/>
+              <g><circle cx="636" cy="250" r="6.5" fill="none" stroke="#3ddc97" stroke-width="2"/><line x1="627" y1="250" x2="645" y2="250" stroke="#3ddc97" stroke-width="1.4"/><line x1="636" y1="241" x2="636" y2="259" stroke="#3ddc97" stroke-width="1.4"/></g>
+              <!-- axes -->
+              <g font-family="JetBrains Mono" font-size="11"><line x1="60" y1="440" x2="60" y2="400" stroke="#3ddc97" stroke-width="1.6"/><line x1="60" y1="440" x2="100" y2="440" stroke="#ff8a3d" stroke-width="1.6"/><line x1="60" y1="440" x2="84" y2="424" stroke="#4d9fff" stroke-width="1.6"/><text x="50" y="394" fill="#3ddc97">y</text><text x="104" y="444" fill="#ff8a3d">x</text><text x="86" y="420" fill="#4d9fff">z</text></g>
+            </svg>
+            <div style="position:absolute;right:14px;top:46px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#5c6675;text-align:right;line-height:1.7"><div>17 body + 42 hand kpts</div><div style="color:#3ddc97">wrist track: active</div></div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:16px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#5c6675;margin-bottom:14px">camera</div>
+            <div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:12px;color:#9aa4b2;margin-bottom:6px"><span>azimuth</span><span style="font-family:'JetBrains Mono',monospace;color:#4d9fff">{{ az }}°</span></div><div style="height:5px;background:#1a222e;border-radius:4px;position:relative"><div style="position:absolute;left:0;top:0;bottom:0;background:#4d9fff;border-radius:4px;width:{{ azPct }}%"></div><div style="position:absolute;top:-3px;width:11px;height:11px;border-radius:50%;background:#fff;border:2px solid #4d9fff;left:{{ azPct }}%;transform:translateX(-50%)"></div></div></div>
+            <div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;font-size:12px;color:#9aa4b2;margin-bottom:6px"><span>elevation</span><span style="font-family:'JetBrains Mono',monospace;color:#4d9fff">{{ el }}°</span></div><div style="height:5px;background:#1a222e;border-radius:4px;position:relative"><div style="position:absolute;left:0;top:0;bottom:0;background:#4d9fff;border-radius:4px;width:{{ elPct }}%"></div><div style="position:absolute;top:-3px;width:11px;height:11px;border-radius:50%;background:#fff;border:2px solid #4d9fff;left:{{ elPct }}%;transform:translateX(-50%)"></div></div></div>
+            <div style="display:flex;gap:7px;margin-top:16px">
+              <span onClick="{{ viewFront }}" style="flex:1;text-align:center;cursor:pointer;font-size:11.5px;color:#9aa4b2;background:#0e1826;border:1px solid #1c2c44;border-radius:7px;padding:7px">front</span>
+              <span onClick="{{ viewSide }}" style="flex:1;text-align:center;cursor:pointer;font-size:11.5px;color:#9aa4b2;background:#0e1826;border:1px solid #1c2c44;border-radius:7px;padding:7px">side</span>
+              <span onClick="{{ viewTop }}" style="flex:1;text-align:center;cursor:pointer;font-size:11.5px;color:#9aa4b2;background:#0e1826;border:1px solid #1c2c44;border-radius:7px;padding:7px">top</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:16px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#5c6675;margin-bottom:12px">frame scrubber</div>
+            <div onMouseDown="{{ seekStart }}" onTouchStart="{{ seekStart }}" style="height:16px;display:flex;align-items:center;position:relative;margin-bottom:10px;cursor:pointer"><div style="position:absolute;left:0;right:0;height:6px;background:#1a222e;border-radius:4px"></div><div style="position:absolute;left:0;height:6px;background:linear-gradient(90deg,#4d9fff,#3ddc97);border-radius:4px;width:{{ framePct }}%"></div><div style="position:absolute;top:50%;width:13px;height:13px;border-radius:50%;background:#fff;border:2px solid #3ddc97;left:{{ framePct }}%;transform:translate(-50%,-50%)"></div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between"><span onClick="{{ togglePlay }}" style="cursor:pointer;width:30px;height:30px;border-radius:7px;background:#4d9fff;color:#06121f;display:flex;align-items:center;justify-content:center;font-size:12px">{{ playGlyph }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9aa4b2">{{ frameLabel }} · {{ timecode }}</span></div>
+          </div>
+          <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:16px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#5c6675;margin-bottom:12px">legend</div>
+            <div style="display:flex;flex-direction:column;gap:9px;font-size:12.5px">
+              <div style="display:flex;align-items:center;gap:9px"><span style="width:14px;height:3px;border-radius:2px;background:#4d9fff"></span><span style="color:#9aa4b2">body joints (17)</span></div>
+              <div style="display:flex;align-items:center;gap:9px"><span style="width:10px;height:10px;border-radius:50%;background:#c98bff"></span><span style="color:#9aa4b2">hand keypoints (42)</span></div>
+              <div style="display:flex;align-items:center;gap:9px"><span style="width:14px;height:3px;border-radius:2px;background:#4d9fff;opacity:.7"></span><span style="color:#9aa4b2">wrist trajectory (past)</span></div>
+              <div style="display:flex;align-items:center;gap:9px"><span style="width:14px;height:0;border-top:2px dashed #3ddc97"></span><span style="color:#9aa4b2">predicted (t+1.0s)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ===== MODEL INSPECTOR ===== -->
+      <sc-if value="{{ inspectorActive }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="display:flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#5c6675;margin-bottom:12px"><span style="width:6px;height:6px;border-radius:2px;background:#ff8a3d"></span>demo-mode metrics — simulated on a 150-clip MVP set; targets, not production benchmarks</div>
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px">
+          <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="6">
+            <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:11px;padding:14px 15px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#5c6675;margin-bottom:9px">{{ m.label }}</div>
+              <div style="display:flex;align-items:baseline;gap:4px"><span style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:600;color:{{ m.color }}">{{ m.value }}</span><span style="font-size:11.5px;color:#5c6675">{{ m.unit }}</span></div>
+              <div style="font-size:10.5px;color:#5c6675;font-family:'JetBrains Mono',monospace;margin-top:6px">{{ m.sub }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#5c6675;margin-bottom:12px">architecture · inference graph</div>
+        <div style="display:flex;gap:10px;align-items:stretch;margin-bottom:22px">
+          <sc-for list="{{ archCards }}" as="a" hint-placeholder-count="5">
+            <div style="flex:1;border:1px solid {{ a.border }};background:{{ a.bg }};border-radius:12px;padding:15px 14px;display:flex;flex-direction:column">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:{{ a.accent }}">{{ a.n }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:{{ a.accent }};border:1px solid {{ a.border }};padding:2px 7px;border-radius:20px">{{ a.tag }}</span></div>
+              <div style="font-size:14.5px;font-weight:600;margin-bottom:5px;letter-spacing:-.01em">{{ a.title }}</div>
+              <div style="font-size:12px;color:#9aa4b2;margin-bottom:10px">{{ a.model }}</div>
+              <div style="margin-top:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:#5c6675;line-height:1.5;border-top:1px solid #141a23;padding-top:9px">{{ a.io }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+          <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:18px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#5c6675;margin-bottom:14px">production deployment</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ deploy }}" as="d" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:#0a0d12;border:1px solid #161f2a;border-radius:9px">
+                  <div><div style="font-size:13.5px;font-weight:600">{{ d.label }}</div><div style="font-size:11.5px;color:#5c6675;font-family:'JetBrains Mono',monospace">{{ d.sub }}</div></div>
+                  <span style="display:flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:11px;color:{{ d.color }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ d.color }};animation:ehp-pulse 1.8s infinite"></span>{{ d.status }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:18px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#5c6675;margin-bottom:14px">latency budget · per frame</div>
+            <div style="display:flex;flex-direction:column;gap:13px">
+              <sc-for list="{{ latency }}" as="l" hint-placeholder-count="5">
+                <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:#cdd6e2">{{ l.label }}</span><span style="font-family:'JetBrains Mono',monospace;color:#9aa4b2">{{ l.ms }} ms</span></div><div style="height:6px;background:#1a222e;border-radius:4px;overflow:hidden"><div style="height:100%;border-radius:4px;background:{{ l.color }};width:{{ l.pct }}%"></div></div></div>
+              </sc-for>
+              <div style="display:flex;justify-content:space-between;border-top:1px solid #141a23;padding-top:11px;font-family:'JetBrains Mono',monospace;font-size:12.5px"><span style="color:#5c6675">total · end-to-end</span><span style="color:#3ddc97;font-weight:600">33 ms · 30 fps</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ===== DATASET & EVAL ===== -->
+      <sc-if value="{{ datasetActive }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#5c6675;margin-bottom:12px">data sources</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+          <sc-for list="{{ datasetSources }}" as="s" hint-placeholder-count="4">
+            <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:16px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="width:32px;height:32px;border-radius:8px;background:{{ s.iconBg }};display:flex;align-items:center;justify-content:center"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:{{ s.accent }}">{{ s.glyph }}</span></div><span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:{{ s.accent }};border:1px solid {{ s.border }};padding:2px 7px;border-radius:20px">{{ s.tag }}</span></div>
+              <div style="font-size:14px;font-weight:600;margin-bottom:4px;letter-spacing:-.01em">{{ s.title }}</div>
+              <div style="font-size:12px;color:#8a93a3;margin-bottom:12px;line-height:1.4">{{ s.sub }}</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:{{ s.accent }}">{{ s.clips }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:18px">
+          <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:18px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#5c6675">action class distribution</span><span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#5c6675">566 segments · 150 clips · demo split</span></div>
+            <div style="display:flex;flex-direction:column;gap:13px">
+              <sc-for list="{{ classDist }}" as="c" hint-placeholder-count="6">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="width:64px;font-size:12.5px;color:#cdd6e2;text-transform:capitalize">{{ c.label }}</span>
+                  <div style="flex:1;height:18px;background:#0a0d12;border-radius:5px;overflow:hidden"><div style="height:100%;border-radius:5px;background:{{ c.color }};width:{{ c.pct }}%"></div></div>
+                  <span style="width:46px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#9aa4b2">{{ c.count }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:18px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#5c6675;margin-bottom:16px">failure cases &amp; robustness</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ failureCases }}" as="f" hint-placeholder-count="5">
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;background:#0a0d12;border:1px solid #161f2a;border-radius:9px">
+                  <span style="width:8px;height:8px;border-radius:50%;background:{{ f.sevColor }};flex:none"></span>
+                  <div style="flex:1"><div style="font-size:13px;font-weight:600">{{ f.title }}</div><div style="font-size:11.5px;color:#5c6675">{{ f.note }}</div></div>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:{{ f.sevColor }};white-space:nowrap">{{ f.rate }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ===== IMPLEMENTATION HANDOFF ===== -->
+      <sc-if value="{{ handoffActive }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="display:flex;align-items:center;gap:14px;border:1px solid #1c2c44;background:linear-gradient(90deg,#0a111c,#0b140f);border-radius:12px;padding:16px 18px;margin-bottom:20px">
+          <div style="width:38px;height:38px;border-radius:9px;background:#0e1826;border:1px solid #1c2c44;display:flex;align-items:center;justify-content:center;flex:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4d9fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></div>
+          <div style="flex:1"><div style="font-size:15px;font-weight:600">Conversion target — React + FastAPI + PyTorch</div><div style="font-size:12.5px;color:#8a93a3;margin-top:2px">Build the frontend and demo-mode backend first; drop in real PyTorch models behind the same API. Everything below maps this prototype onto that service.</div></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px">
+          <sc-for list="{{ stack }}" as="t" hint-placeholder-count="4">
+            <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:11px;padding:13px 14px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:{{ t.color }};margin-bottom:7px">{{ t.k }}</div>
+              <div style="font-size:13px;font-weight:600;color:#e8ecf2">{{ t.v }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:18px;margin-bottom:18px">
+          <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:18px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#5c6675;margin-bottom:15px">component list</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px 20px">
+              <sc-for list="{{ componentGroups }}" as="g" hint-placeholder-count="8">
+                <div>
+                  <div style="font-size:12px;font-weight:600;color:#cdd6e2;margin-bottom:8px">{{ g.group }}</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:5px">
+                    <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="3">
+                      <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9aa4b2;background:#0e131a;border:1px solid #1a222e;padding:3px 7px;border-radius:5px">{{ it }}</span>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:18px">
+            <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:18px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#5c6675;margin-bottom:13px">page routes</div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <sc-for list="{{ routes }}" as="r" hint-placeholder-count="5">
+                  <div style="display:flex;align-items:baseline;gap:10px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#4d9fff;min-width:78px">{{ r.path }}</span>
+                    <span style="font-size:12.5px;color:#cdd6e2;min-width:108px">{{ r.comp }}</span>
+                    <span style="font-size:11.5px;color:#5c6675">{{ r.note }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:18px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#5c6675;margin-bottom:13px">state variables</div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <sc-for list="{{ stateVars }}" as="v" hint-placeholder-count="8">
+                  <div style="display:flex;align-items:baseline;gap:10px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#3ddc97;min-width:74px">{{ v.name }}</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#9b7cff;min-width:128px">{{ v.type }}</span>
+                    <span style="font-size:11.5px;color:#5c6675">{{ v.note }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:18px;margin-bottom:18px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#5c6675;margin-bottom:14px">api endpoint assumptions</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ endpoints }}" as="e" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:12px;padding:9px 12px;background:#0a0d12;border:1px solid #161f2a;border-radius:8px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;color:{{ e.mColor }};min-width:38px">{{ e.m }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#e8ecf2;min-width:286px">{{ e.path }}</span>
+                <span style="font-size:11.5px;color:#5c6675">{{ e.note }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:18px">
+          <div style="border:1px solid #1c2533;background:#0a0d12;border-radius:12px;overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:1px solid #141a23;background:#0b0f15"><span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9aa4b2">GET /api/v1/sessions/{id}/frames/142</span><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#3ddc97">200 · application/json</span></div>
+            <pre style="margin:0;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.62;color:#aeb9c7;white-space:pre;overflow-x:auto">{{ jsonSample }}</pre>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:18px">
+            <div style="border:1px solid #1c2533;background:#0b0f15;border-radius:12px;padding:18px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#5c6675;margin-bottom:13px">asset / image-slot notes</div>
+              <div style="display:flex;flex-direction:column;gap:11px">
+                <sc-for list="{{ assetNotes }}" as="n" hint-placeholder-count="4">
+                  <div style="display:flex;gap:9px;font-size:12.5px;color:#9aa4b2;line-height:1.45"><span style="color:#4d9fff;flex:none">▸</span><span>{{ n }}</span></div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="border:1px solid #1c4533;background:#0b140f;border-radius:12px;padding:18px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#3ddc97;margin-bottom:13px">animation &amp; interaction behavior</div>
+              <div style="display:flex;flex-direction:column;gap:11px">
+                <sc-for list="{{ animNotes }}" as="n" hint-placeholder-count="5">
+                  <div style="display:flex;gap:9px;font-size:12.5px;color:#9aa4b2;line-height:1.45"><span style="color:#3ddc97;flex:none">▸</span><span>{{ n }}</span></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px">
+          <div style="border:1px solid #1c2c44;background:#0a111c;border-radius:12px;padding:18px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#4d9fff;margin-bottom:13px">frontend implementation notes</div>
+            <div style="display:flex;flex-direction:column;gap:11px">
+              <sc-for list="{{ frontendNotes }}" as="n" hint-placeholder-count="5">
+                <div style="display:flex;gap:9px;font-size:12.5px;color:#9aa4b2;line-height:1.45"><span style="color:#4d9fff;flex:none">▸</span><span>{{ n }}</span></div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="border:1px solid #1c4533;background:#0b140f;border-radius:12px;padding:18px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#3ddc97;margin-bottom:13px">backend implementation notes</div>
+            <div style="display:flex;flex-direction:column;gap:11px">
+              <sc-for list="{{ backendNotes }}" as="n" hint-placeholder-count="5">
+                <div style="display:flex;gap:9px;font-size:12.5px;color:#9aa4b2;line-height:1.45"><span style="color:#3ddc97;flex:none">▸</span><span>{{ n }}</span></div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+    </div>
+  </main>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { screen: 'landing', frame: 96, playing: true, az: 35, el: 18 };
+
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      this.setState(s => s.playing ? { frame: (s.frame + 1) % 320 } : {});
+    }, 90);
+  }
+  componentWillUnmount() { clearInterval(this.timer); }
+
+  go(screen) { this.setState({ screen }); window.scrollTo(0, 0); }
+  togglePlay() { this.setState(s => ({ playing: !s.playing })); }
+  setView(az, el) { this.setState({ az, el }); }
+
+  seekStart(e) {
+    const track = e.currentTarget;
+    const rect = track.getBoundingClientRect();
+    const apply = (clientX) => {
+      let p = (clientX - rect.left) / rect.width;
+      p = Math.max(0, Math.min(1, p));
+      this.setState({ frame: Math.round(p * 319) });
+    };
+    this.setState({ playing: false });
+    apply(e.touches ? e.touches[0].clientX : e.clientX);
+    const move = ev => apply(ev.touches ? ev.touches[0].clientX : ev.clientX);
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+      window.removeEventListener('touchmove', move);
+      window.removeEventListener('touchend', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+    window.addEventListener('touchmove', move, { passive: true });
+    window.addEventListener('touchend', up);
+  }
+
+  renderVals() {
+    const s = this.state;
+    const f = s.frame;
+    const TOTAL = 320, FPS = 30;
+
+    const segDefs = [
+      { key: 'idle',     label: 'Idle',     s: 0,   e: 46,  conf: 0.99, color: '#8893a3', bg: '#11151c' },
+      { key: 'reaching', label: 'Reaching', s: 46,  e: 120, conf: 0.91, color: '#4d9fff', bg: '#0e1826' },
+      { key: 'grasping', label: 'Grasping', s: 120, e: 164, conf: 0.88, color: '#9b7cff', bg: '#14112a' },
+      { key: 'handoff',  label: 'Handoff',  s: 164, e: 232, conf: 0.94, color: '#3ddc97', bg: '#0c1812' },
+      { key: 'placing',  label: 'Placing',  s: 232, e: 280, conf: 0.86, color: '#ff8a3d', bg: '#1a1208' },
+      { key: 'idle2',    label: 'Idle',     s: 280, e: 320, conf: 0.98, color: '#8893a3', bg: '#11151c' },
+    ];
+    const cur = segDefs.find(d => f >= d.s && f < d.e) || segDefs[0];
+
+    const pad = n => String(n).padStart(4, '0');
+    const secs = f / FPS;
+    const timecode = '00:' + String(Math.floor(secs)).padStart(2, '0') + '.' + String(Math.floor((secs % 1) * 10));
+
+    // handoff intent confidence: smooth, peaks during handoff
+    const base = { idle: 0.08, reaching: 0.55, grasping: 0.72, handoff: 0.94, placing: 0.21, idle2: 0.05 }[cur.key];
+    const noise = Math.sin(f / 5) * 0.018;
+    const hc = Math.max(0, Math.min(0.99, base + noise));
+    const hcPct = Math.round(hc * 100);
+    const hi = hc >= 0.8;
+
+    const robotMap = {
+      idle:     ['Hold position',       'standby · gripper closed'],
+      reaching: ['Pre-position gripper', 'align to predicted target'],
+      grasping: ['Track object pose',    'maintain approach vector'],
+      handoff:  ['Extend gripper · open', 'compliance mode · ready'],
+      placing:  ['Retract · standby',    'clear workspace'],
+      idle2:    ['Hold position',        'standby · gripper closed'],
+    };
+    const [robotAction, robotActionSub] = robotMap[cur.key];
+
+    const chipBase = 'font-family:\'JetBrains Mono\',monospace;font-size:10px;padding:4px 8px;border-radius:5px;';
+    const chip = {};
+    ['idle','reaching','grasping','handoff','placing'].forEach(k => {
+      const on = cur.key === k || (k === 'idle' && cur.key === 'idle2');
+      chip[k] = chipBase + (on
+        ? 'background:' + cur.color + '22;color:' + cur.color + ';border:1px solid ' + cur.color + '55;'
+        : 'background:#0e131a;color:#3f4a59;border:1px solid #1a222e;');
+    });
+
+    const mk = key => {
+      const active = s.screen === key;
+      return {
+        active,
+        rowStyle: 'display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:8px;cursor:pointer;position:relative;font-size:13.5px;font-weight:500;color:' + (active ? '#e8ecf2' : '#8a93a3') + ';background:' + (active ? '#101824' : 'transparent') + ';',
+        barStyle: 'position:absolute;left:0;top:7px;bottom:7px;width:2.5px;border-radius:2px;background:#4d9fff;opacity:' + (active ? 1 : 0) + ';',
+        iconColor: active ? '#4d9fff' : '#5c6675',
+      };
+    };
+
+    const titleMap = {
+      video:     ['Video analysis', 'workspace / live inference'],
+      pose3d:    ['3D pose viewer', 'workspace / reconstruction'],
+      inspector: ['Model inspector', 'workspace / architecture'],
+      dataset:   ['Dataset & evaluation', 'workspace / data'],
+      handoff:   ['Implementation handoff', 'workspace / dev export'],
+    };
+    const tm = titleMap[s.screen] || titleMap.video;
+
+    const segments = segDefs.map(d => ({
+      label: d.label, color: d.color, bg: d.bg,
+      conf: d.conf.toFixed(2),
+      width: ((d.e - d.s) / TOTAL * 100).toFixed(2) + '%',
+      shadow: d === cur ? 'inset 0 0 0 1.5px ' + d.color + ', inset 0 0 18px ' + d.color + '33' : 'none',
+    }));
+
+    // ---- simulated per-frame pose interpolation ----
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const interpKF = (kf, ff) => {
+      if (ff <= kf[0].f) return { x: kf[0].x, y: kf[0].y };
+      for (let i = 0; i < kf.length - 1; i++) {
+        if (ff >= kf[i].f && ff <= kf[i + 1].f) {
+          const t = (ff - kf[i].f) / (kf[i + 1].f - kf[i].f);
+          return { x: lerp(kf[i].x, kf[i + 1].x, t), y: lerp(kf[i].y, kf[i + 1].y, t) };
+        }
+      }
+      return { x: kf[kf.length - 1].x, y: kf[kf.length - 1].y };
+    };
+    const wristKF = [
+      { f: 0, x: 316, y: 206 }, { f: 46, x: 330, y: 202 }, { f: 120, x: 404, y: 182 },
+      { f: 164, x: 404, y: 182 }, { f: 232, x: 520, y: 198 }, { f: 280, x: 470, y: 250 }, { f: 319, x: 322, y: 208 },
+    ];
+    const w0 = interpKF(wristKF, f);
+    const wx = w0.x + Math.sin(f / 4) * 1.2;
+    const wy = w0.y + Math.cos(f / 3) * 1.0;
+    const emx = (288 + wx) / 2, emy = (134 + wy) / 2;
+    const elbx = emx - 6, elby = emy + 14;
+    const objp = f < 116 ? { x: 396, y: 150 } : { x: wx - 8, y: wy - 30 };
+    const fut = interpKF(wristKF, Math.min(319, f + 34));
+    const fxp = fut.x, fyp = fut.y;
+    const c1x = wx + (fxp - wx) * 0.4, c1y = wy - 34;
+    const c2x = wx + (fxp - wx) * 0.72, c2y = fyp - 8;
+    const r1 = n => n.toFixed(1);
+    const pose = {
+      rwrist: { x: r1(wx), y: r1(wy) },
+      relbow: { x: r1(elbx), y: r1(elby) },
+      obj: { x: r1(objp.x), y: r1(objp.y) },
+      future: { x: r1(fxp), y: r1(fyp) },
+      traj: 'M' + r1(wx) + ' ' + r1(wy) + ' C ' + r1(c1x) + ' ' + r1(c1y) + ', ' + r1(c2x) + ' ' + r1(c2y) + ', ' + r1(fxp) + ' ' + r1(fyp),
+      bodyT: 'translate(0 ' + (Math.sin(f / 7) * 1.5).toFixed(2) + ')',
+    };
+    const futureTargetStr = 'x ' + (0.15 + fxp / 640 * 0.95).toFixed(2) + ' · y ' + (0.1 + (400 - fyp) / 400 * 0.7).toFixed(2) + ' · z 0.30 m';
+
+    // ---- implementation handoff data ----
+    const componentGroups = [
+      { group: 'App shell', items: ['AppShell', 'Sidebar', 'TopBar', 'RouteOutlet'] },
+      { group: 'Landing', items: ['LandingHero', 'PipelineRibbon', 'BadgeRow'] },
+      { group: 'Video analysis', items: ['VideoPanel', 'SkeletonOverlay', 'HandLandmarks', 'ObjectBBox', 'TrajectoryPath', 'DecisionCard', 'TransportBar'] },
+      { group: 'Inference cards', items: ['ActionCard', 'IntentCard', 'TargetCard', 'RobotActionCard'] },
+      { group: 'Timeline', items: ['ActionTimeline', 'TimelineSegment', 'Playhead', 'ScrubTrack'] },
+      { group: '3D viewer', items: ['PoseViewer3D', 'CameraControls', 'FrameScrubber', 'JointLegend'] },
+      { group: 'Inspector', items: ['MetricGrid', 'ArchCard', 'DeploymentStatus', 'LatencyBudget'] },
+      { group: 'Dataset', items: ['DatasetSourceCard', 'ClassDistribution', 'FailureCases'] },
+    ];
+    const routes = [
+      { path: '/', comp: 'Overview', note: 'landing / value prop' },
+      { path: '/analyze', comp: 'VideoAnalysis', note: 'live inference dashboard' },
+      { path: '/pose', comp: 'PoseViewer3D', note: '3D reconstruction' },
+      { path: '/inspector', comp: 'ModelInspector', note: 'architecture + metrics' },
+      { path: '/dataset', comp: 'DatasetEval', note: 'data + evaluation' },
+    ];
+    const stateVars = [
+      { name: 'frame', type: 'number', note: 'current frame index 0..N' },
+      { name: 'playing', type: 'boolean', note: 'playback transport state' },
+      { name: 'route', type: 'string', note: 'active screen (react-router)' },
+      { name: 'sessionId', type: 'string', note: 'uploaded clip session id' },
+      { name: 'inference', type: 'InferenceResult', note: 'per-frame backend payload' },
+      { name: 'timeline', type: 'Segment[]', note: 'action segments + confidences' },
+      { name: 'camera', type: '{ az, el }', note: '3D viewer orbit angles' },
+      { name: 'wsStatus', type: '"online" | "offline"', note: 'stream socket health' },
+    ];
+    const endpoints = [
+      { m: 'POST', mColor: '#4d9fff', path: '/api/v1/sessions', note: 'upload video → { session_id, fps, n_frames }' },
+      { m: 'GET', mColor: '#3ddc97', path: '/api/v1/sessions/{id}/frames/{n}', note: 'inference for one frame → InferenceResult' },
+      { m: 'WS', mColor: '#9b7cff', path: '/ws/v1/stream', note: 'realtime: push frames, receive InferenceResult' },
+      { m: 'GET', mColor: '#3ddc97', path: '/api/v1/model/meta', note: 'architecture, metrics, model version' },
+      { m: 'GET', mColor: '#3ddc97', path: '/api/v1/healthz', note: 'liveness + device (cpu / gpu)' },
+    ];
+    const assetNotes = [
+      'Hero & video frames use <image-slot> placeholders — swap for a <video> element or a <canvas> drawing decoded RGB frames in production.',
+      'Overlays are SVG in a normalized 640×400 viewBox; backend pose coords are normalized [0,1] — multiply by the rendered size.',
+      'Skeleton = 17 COCO body joints; hands = 21 keypoints each; object = one bbox + label + score.',
+      'Keep the overlay SVG and the video in the same positioned container so they scale together (object-fit: cover).',
+    ];
+    const animNotes = [
+      'Draggable timeline & scrubbers: pointer-drag sets the frame directly and pauses playback; playhead, timecode, action label, confidence and robot card all derive from frame.',
+      'Simulated pose interpolation: wrist / elbow / object / forecast lerp between keyframes every frame (mock) — swap for real per-frame backend pose.',
+      'Playback ticks a frame counter; in production bind it to <video>.currentTime (or the WS frame index) instead of a timer.',
+      'Predicted trajectory is a cubic path through forecast points; dashed stroke-dashoffset animates the flow.',
+      'Decorative only — pulse, glow, scanline; the confidence bar uses a CSS width transition. Safe to drop for screenshots.',
+    ];
+    const frontendNotes = [
+      'React + Vite + TypeScript; React Router for the 5 routes; one <AppShell> with persistent <Sidebar> + <TopBar>.',
+      'Overlay is an absolutely-positioned <svg> sharing the video container — keep the 640×400 viewBox and scale normalized [0,1] coords to it.',
+      'Drive playback from <video>.currentTime via requestAnimationFrame; the scrubber sets currentTime, then re-reads inference for that frame.',
+      'Co-locate inference state in a useInference(sessionId) hook — REST per-frame now, swap to a WebSocket subscription later.',
+      'Tokens: bg #070a0e, signal blue #4d9fff, green #3ddc97, alert amber #ff8a3d; mono labels in JetBrains Mono.',
+    ];
+    const backendNotes = [
+      'FastAPI: POST /sessions (upload + decode), GET /sessions/{id}/frames/{n}, WS /stream; a Pydantic InferenceResult mirrors the JSON at left.',
+      'Wrap each pipeline stage behind an interface and ship demo-mode stubs that return canned / keyframed outputs first.',
+      'PyTorch stubs: HRNet pose · lifting transformer · Pose-TCN action · GRU trajectory · MLP intent — load lazily, export to ONNX.',
+      'Decode video with OpenCV / PyAV; cache per-frame results; return normalized 2D coords plus 3D joints in mm.',
+      'Dockerize (multi-stage) and run ONNX Runtime with a CPU fallback so demos work without a GPU.',
+    ];
+    const stack = [
+      { k: 'Frontend', v: 'React + Vite + TypeScript', color: '#4d9fff' },
+      { k: 'Backend', v: 'FastAPI + Pydantic', color: '#3ddc97' },
+      { k: 'ML', v: 'PyTorch → ONNX (stubs)', color: '#9b7cff' },
+      { k: 'Mode', v: 'demo-mode inference first', color: '#ff8a3d' },
+    ];
+    const jsonSample = `{
+  "session_id": "clp_7f3a",
+  "demo_mode": true,
+  "frame": 142,
+  "timestamp_s": 4.73,
+  "fps": 30.0,
+  "latency_ms": 33,
+  "action": {
+    "label": "handoff",
+    "confidence": 0.94,
+    "scores": { "idle": 0.01, "reaching": 0.02,
+                "grasping": 0.03, "handoff": 0.94 }
+  },
+  "handoff_intent": { "detected": true, "confidence": 0.94 },
+  "pose_2d": {
+    "body":       [[0.41, 0.32, 0.99], "...17 [x,y,score]"],
+    "hand_right": [[0.63, 0.45, 0.97], "...21 [x,y,score]"]
+  },
+  "pose_3d": {
+    "root":      [0.0, 0.0, 0.0],
+    "joints_mm": [[-42, 110, 35], "...17 [x,y,z]"]
+  },
+  "object": { "label": "cup", "confidence": 0.97,
+              "bbox": [0.61, 0.37, 0.10, 0.16] },
+  "trajectory": {
+    "horizon_s": 1.0,
+    "history":  [[0.55, 0.46], "..."],
+    "forecast": [[0.70, 0.44], "...30 steps"],
+    "ade_mm": 52, "fde_mm": 96
+  },
+  "robot_action": {
+    "command": "extend_gripper",
+    "params": { "open": true, "approach": [0.62, 0.41, 0.30] },
+    "priority": "high"
+  }
+}`;
+
+    const metrics = [
+      { label: 'throughput', value: '30.0', unit: '/s', sub: 'gpu · demo-mode', color: '#e8ecf2' },
+      { label: 'latency', value: '33', unit: 'ms', sub: 'p50 · 48 p95', color: '#e8ecf2' },
+      { label: 'model size', value: '41', unit: 'MB', sub: 'onnx · int8', color: '#e8ecf2' },
+      { label: 'traj error', value: '52', unit: 'mm', sub: 'ade · 96 fde', color: '#e8ecf2' },
+      { label: 'intent acc', value: '89.2', unit: '%', sub: 'demo split · sim', color: '#3ddc97' },
+      { label: 'action top-1', value: '84.5', unit: '%', sub: '6 classes · sim', color: '#4d9fff' },
+    ];
+
+    const archCards = [
+      { n: '01', title: 'Pose extraction', model: 'HRNet-W32 + hand detector', io: 'rgb frame → 17 body + 42 hand kpts', tag: '2D', accent: '#4d9fff', border: '#1c2c44', bg: '#0a111c' },
+      { n: '02', title: '2D→3D lifting', model: 'Temporal lifting transformer', io: '2D seq → 3D joints (root-rel)', tag: '2D→3D', accent: '#4d9fff', border: '#1c2c44', bg: '#0a111c' },
+      { n: '03', title: 'Action recognition', model: 'Pose-TCN · causal', io: '3D pose window → 6 actions', tag: 'temporal', accent: '#9b7cff', border: '#2a2348', bg: '#0e0b1a' },
+      { n: '04', title: 'Trajectory forecast', model: 'Seq2seq GRU decoder', io: 'wrist history → 1.0s future path', tag: 'forecast', accent: '#3ddc97', border: '#1c4533', bg: '#0a140e' },
+      { n: '05', title: 'Handoff intent', model: 'Fusion MLP head', io: 'pose+motion feats → intent + conf', tag: 'decision', accent: '#3ddc97', border: '#1c4533', bg: '#0a140e' },
+    ];
+
+    const deploy = [
+      { label: 'FastAPI', sub: 'REST + WebSocket stream', status: 'online', color: '#3ddc97' },
+      { label: 'Docker', sub: 'multi-stage · 380 MB image', status: 'built', color: '#4d9fff' },
+      { label: 'ONNX Runtime', sub: 'graph-optimized · int8', status: 'online', color: '#3ddc97' },
+      { label: 'CPU / GPU inference', sub: 'cuda 12 · cpu fallback', status: 'gpu active', color: '#3ddc97' },
+    ];
+
+    const latency = [
+      { label: 'Pose extraction', ms: '13.2', pct: 40, color: '#4d9fff' },
+      { label: '2D→3D lifting', ms: '6.1', pct: 18, color: '#4d9fff' },
+      { label: 'Action recognition', ms: '5.4', pct: 16, color: '#9b7cff' },
+      { label: 'Trajectory forecast', ms: '4.9', pct: 15, color: '#3ddc97' },
+      { label: 'Intent classifier', ms: '3.4', pct: 11, color: '#3ddc97' },
+    ];
+
+    const datasetSources = [
+      { title: 'Self-recorded handoffs', sub: 'controlled lab · 3 cameras · MVP set', clips: '150 clips', tag: 'primary', glyph: 'REC', accent: '#3ddc97', border: '#1c4533', iconBg: '#0c1812' },
+      { title: 'HOI4D-inspired HOI', sub: 'human-object interaction priors', clips: 'pretrain subset', tag: 'inspired by', accent: '#4d9fff', border: '#1c2c44', iconBg: '#0e1826', glyph: 'HOI' },
+      { title: 'H3WB / Human3.6M', sub: '2D→3D pose lifting supervision', clips: 'optional benchmark', tag: 'benchmark', accent: '#9b7cff', border: '#2a2348', iconBg: '#14112a', glyph: '3D' },
+      { title: 'Ego4D-inspired egocentric', sub: 'first-person video understanding', clips: 'planned extension', tag: 'planned', accent: '#ff8a3d', border: '#3a2a14', iconBg: '#1a1208', glyph: 'EGO' },
+    ];
+
+    const distRaw = [
+      { label: 'idle', count: 88, color: '#5c6675' },
+      { label: 'reaching', count: 142, color: '#4d9fff' },
+      { label: 'grasping', count: 96, color: '#9b7cff' },
+      { label: 'placing', count: 74, color: '#ff8a3d' },
+      { label: 'pointing', count: 38, color: '#ffd24d' },
+      { label: 'handoff', count: 128, color: '#3ddc97' },
+    ];
+    const distMax = Math.max(...distRaw.map(d => d.count));
+    const classDist = distRaw.map(d => ({ ...d, count: d.count.toLocaleString(), pct: Math.round(d.count / distMax * 100) }));
+
+    const failureCases = [
+      { title: 'Occlusion', note: 'object / self-occlusion drops hand kpts', rate: '−8.2% recall', sevColor: '#ff5a4d' },
+      { title: 'Fast hand motion', note: 'motion blur beyond 0.4 px/ms', rate: '+12mm FDE', sevColor: '#ff8a3d' },
+      { title: 'Poor lighting', note: 'low-light sensor noise', rate: '−6.1% recall', sevColor: '#ff8a3d' },
+      { title: 'Multiple people', note: 'association ambiguity · id switches', rate: 'high', sevColor: '#ff5a4d' },
+      { title: 'Unusual camera angles', note: 'top-down / extreme oblique', rate: 'low', sevColor: '#3ddc97' },
+    ];
+
+    return {
+      landingActive: s.screen === 'landing',
+      toolActive: s.screen !== 'landing',
+      videoActive: s.screen === 'video',
+      pose3dActive: s.screen === 'pose3d',
+      inspectorActive: s.screen === 'inspector',
+      datasetActive: s.screen === 'dataset',
+      handoffActive: s.screen === 'handoff',
+      nav: { video: mk('video'), pose3d: mk('pose3d'), inspector: mk('inspector'), dataset: mk('dataset'), handoff: mk('handoff') },
+      screenTitle: tm[0], screenCrumb: tm[1],
+      goLanding: () => this.go('landing'),
+      goVideo: () => this.go('video'),
+      goPose: () => this.go('pose3d'),
+      goInspector: () => this.go('inspector'),
+      goDataset: () => this.go('dataset'),
+      goHandoff: () => this.go('handoff'),
+      togglePlay: () => this.togglePlay(),
+      seekStart: (e) => this.seekStart(e),
+      viewFront: () => this.setView(0, 8),
+      viewSide: () => this.setView(80, 12),
+      viewTop: () => this.setView(35, 62),
+      playGlyph: s.playing ? '❚❚' : '▶',
+      timecode,
+      frameLabel: 'frame ' + pad(f) + '/0320',
+      framePct: (f / TOTAL * 100).toFixed(2),
+      az: s.az, el: s.el, azPct: Math.round(s.az / 90 * 100), elPct: Math.round(s.el / 90 * 100),
+      currentActionLabel: cur.label, currentActionColor: cur.color, currentActionConf: cur.conf.toFixed(2),
+      chip,
+      handoffConfPct: hcPct, handoffConf2: hc.toFixed(2),
+      intentStatus: hi ? 'INTENT DETECTED' : 'monitoring',
+      intentStatusColor: hi ? '#3ddc97' : '#5c6675',
+      futureTarget: futureTargetStr,
+      pose,
+      robotAction, robotActionSub,
+      segments, metrics, archCards, deploy, latency, datasetSources, classDist, failureCases,
+      componentGroups, routes, stateVars, endpoints, assetNotes, animNotes, frontendNotes, backendNotes, stack, jsonSample,
+    };
+  }
+}
+</script>
+</body>
+</html>
