@@ -48,6 +48,8 @@ def test_analyze_and_fetch_roundtrip():
 
 def test_unknown_analysis_404():
     assert client.get("/api/analysis/nope").status_code == 404
+    # fetching a frame for an unknown analysis is also a 404 (consistent contract)
+    assert client.get("/api/analysis/nope/frames/0").status_code == 404
 
 
 def test_frame_out_of_range():

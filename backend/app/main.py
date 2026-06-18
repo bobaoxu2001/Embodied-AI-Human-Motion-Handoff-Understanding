@@ -113,10 +113,11 @@ def get_analysis(analysis_id: str) -> AnalysisResponse:
 @app.get("/api/analysis/{analysis_id}/frames/{n}", response_model=InferenceResult)
 def get_frame(analysis_id: str, n: int) -> InferenceResult:
     meta = _ANALYSES.get(analysis_id)
-    demo_flag = meta.demo_mode if meta else True
+    if meta is None:
+        raise HTTPException(status_code=404, detail="analysis not found")
     if n < 0 or n >= demo.TOTAL_FRAMES:
         raise HTTPException(status_code=416, detail="frame index out of range")
-    return demo.derive_frame(n, session_id=analysis_id, demo_mode=demo_flag)
+    return demo.derive_frame(n, session_id=analysis_id, demo_mode=meta.demo_mode)
 
 
 @app.get("/api/model/meta", response_model=ModelMetaResponse)

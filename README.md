@@ -1,5 +1,8 @@
 # Embodied AI — Human Motion & Handoff Understanding
 
+[![CI](https://github.com/bobaoxu2001/Embodied-AI-Human-Motion-Handoff-Understanding/actions/workflows/ci.yml/badge.svg)](https://github.com/bobaoxu2001/Embodied-AI-Human-Motion-Handoff-Understanding/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 **Real-time 3D human pose tracking and handoff-intent recognition for human–robot interaction.**
 
 A full-stack perception system that reads RGB video of a person interacting with an
@@ -204,3 +207,9 @@ Résumé bullets for this project: [docs/RESUME_BULLETS.md](docs/RESUME_BULLETS.
 
 UI/UX from a **Claude Design** handoff package (preserved, unmodified, under
 `design_handoff_embodied_handoff_perception/`). All ML metrics shown are simulated demo data.
+
+---
+
+## License
+
+[MIT](LICENSE) © Allen Xu
