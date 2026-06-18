@@ -172,7 +172,8 @@ Collecting your own clips: [docs/DATASET.md](docs/DATASET.md).
 ## Tests
 
 ```bash
-cd backend && source .venv/bin/activate && pytest -q     # API + demo-engine tests
+cd backend && source .venv/bin/activate && pytest -q     # API + demo-engine tests (8)
+cd frontend && npm test                                   # vitest demo-engine tests (11)
 cd frontend && npm run build                              # type-check + production build
 ```
 
