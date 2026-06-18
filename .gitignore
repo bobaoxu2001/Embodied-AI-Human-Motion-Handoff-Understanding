@@ -27,3 +27,4 @@ frontend/.vite/
 # ---- misc ----
 *.log
 Design questions answered.zip
+.vercel
