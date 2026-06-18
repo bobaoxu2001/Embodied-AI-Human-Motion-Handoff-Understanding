@@ -24,11 +24,22 @@ Phrased honestly — the system ships in demo mode; metrics are simulated target
   **action accuracy, handoff precision/recall/F1, trajectory ADE/FDE, and latency/FPS**.
 - Engineered for **graceful degradation**: optional torch/MediaPipe/OpenCV detected at
   runtime; CPU fallback; frontend falls back to a local engine if the backend is offline.
+- Wrote the **training + export path**: real `nn.Module` training loops over extracted
+  keypoints (self-supervised trajectory, label-supervised action) → ONNX export → an
+  onnxruntime inference path that the pipeline runs automatically once weights exist —
+  with imports guarded so demo mode keeps **zero ML dependencies**.
+- Modeled **harder HRI scenarios** in the UI — successful vs. **failed/aborted handoff**,
+  **two-person association ambiguity**, and **distractor objects** — each driving a
+  different intent confidence curve and emitted robot action.
+- Authored a **model card** (per-model architecture, training config, intended use,
+  out-of-scope, fairness/limitations) served both as docs and a `GET /api/model/card`
+  endpoint, and shipped **CI** (GitHub Actions) with **backend pytest + frontend Vitest**
+  and a live **Vercel** deployment.
 
 ## Slightly longer (single strong bullet)
 
 - Built **Embodied AI — Human Motion & Handoff Understanding**, an end-to-end perception
-  system (React/TS frontend, FastAPI/Pydantic backend, PyTorch model stubs) that reads RGB
+  system (React/TS frontend, FastAPI/Pydantic backend, trainable PyTorch models) that reads RGB
   video to track 3D body & hand pose, recognize 6 manipulation actions, forecast a 1.0 s
   hand trajectory, and decide human→robot handoff intent — shipping as a runnable demo with
   a deterministic backend that mirrors the production `InferenceResult` contract, plus
@@ -44,3 +55,5 @@ Phrased honestly — the system ships in demo mode; metrics are simulated target
 - **Robustness:** documented failure modes (occlusion, fast motion, lighting, multi-person,
   unusual angles) and a roadmap to address them.
 - **Honesty:** every simulated number is labeled `DEMO MODE` on-screen and in docs.
+- **Engineering rigor:** CI runs backend (pytest) + frontend (Vitest) on every push, plus
+  a dataset/eval smoke run; MIT-licensed, model-carded, and deployed on Vercel.
