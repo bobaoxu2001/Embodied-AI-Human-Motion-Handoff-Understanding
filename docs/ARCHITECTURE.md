@@ -90,10 +90,19 @@ frontend/src/
 6. Restart — `runtime.demo_mode()` is now `False`; the API contract is unchanged, so **no
    frontend changes** are needed.
 
+## Realtime streaming (`/ws/stream`)
+
+The WebSocket endpoint (`app/streaming.py`) pushes one `InferenceResult` per frame
+at the clip FPS — true realtime instead of per-frame REST polling. It accepts
+`play` / `pause` / `seek` / `config` control messages; the frontend `useStream`
+hook (`frontend/src/hooks/useStream.ts`) consumes it and the *Video analysis*
+page shows a live stream card. If the socket is unreachable (e.g. the static
+Vercel deploy) the UI stays on its local demo engine — same graceful-degradation
+contract as the REST client.
+
 ## Future work
 
 - Real training + int8 ONNX export; replace simulated metrics with measured ones.
-- WebSocket streaming (`/ws/stream`) for true realtime instead of per-frame REST.
 - Multi-person tracking + re-identification to fix association id-switches.
 - Egocentric / first-person extension (Ego4D-style).
 - Robot-in-the-loop evaluation of the emitted `robot_action` commands.

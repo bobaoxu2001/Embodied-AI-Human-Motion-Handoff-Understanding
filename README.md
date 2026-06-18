@@ -138,6 +138,7 @@ onnxruntime automatically (`backend/app/pipeline/base.py`), `runtime.demo_mode()
 | `GET`  | `/api/analysis/{id}/frames/{n}` | one frame → `InferenceResult` |
 | `GET`  | `/api/model/meta` | architecture + metrics + latency budget |
 | `GET`  | `/api/model/card` | structured model card (per-model arch, training, limits) |
+| `WS`   | `/ws/stream` | realtime per-frame `InferenceResult` stream (play/pause/seek/config) |
 
 The `InferenceResult` payload (per-frame action, handoff intent, 2D/3D pose, object,
 trajectory, robot action) is identical in the Pydantic schema and the TypeScript type —

@@ -7,6 +7,7 @@ import { LabBackground } from "../components/LabBackground";
 import { ScrubBar } from "../components/ScrubBar";
 import { PlayButton } from "../components/PlayButton";
 import { useScrub } from "../hooks/useScrub";
+import { useStream } from "../hooks/useStream";
 import { api } from "../lib/api";
 
 type UploadState = "demo" | "analyzing" | "analyzed" | "fallback";
@@ -25,6 +26,7 @@ export function VideoAnalysis() {
   const [scenario, setScenario] = useState("success");
   const d = derive(frame, scenario);
   const segments = getScenario(scenario).segments;
+  const stream = useStream();
 
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState("handoff_clip_07.mp4");
@@ -250,6 +252,51 @@ export function VideoAnalysis() {
                 <div className="text-[11.5px] text-faint font-mono">{d.robotActionSub}</div>
               </div>
             </div>
+          </div>
+
+          {/* live WebSocket stream (realtime backend inference) */}
+          <div className="border border-line-strong bg-panel rounded-[12px] px-4 py-[13px]">
+            <div className="flex items-center justify-between mb-[9px]">
+              <span className="font-mono text-[10px] tracking-[0.1em] uppercase text-faint">
+                live stream · /ws/stream
+              </span>
+              <span
+                className="flex items-center gap-[6px] font-mono text-[10px]"
+                style={{
+                  color:
+                    stream.status === "online"
+                      ? "#3ddc97"
+                      : stream.status === "connecting"
+                      ? "#4d9fff"
+                      : "#8893a3",
+                }}
+              >
+                <span
+                  className="w-[6px] h-[6px] rounded-full"
+                  style={{
+                    background:
+                      stream.status === "online"
+                        ? "#3ddc97"
+                        : stream.status === "connecting"
+                        ? "#4d9fff"
+                        : "#5c6675",
+                  }}
+                />
+                {stream.status === "online" ? "streaming" : stream.status}
+              </span>
+            </div>
+            {stream.status === "online" && stream.frame ? (
+              <div className="font-mono text-[11.5px] text-muted flex flex-wrap gap-x-4 gap-y-1">
+                <span>frame {String(stream.frame.frame).padStart(4, "0")}</span>
+                <span style={{ color: "#cdd6e2" }}>{stream.frame.action.label}</span>
+                <span>intent {stream.frame.handoff_intent.confidence.toFixed(2)}</span>
+                <span className="text-faint">{Math.round(stream.frame.latency_ms)}ms</span>
+              </div>
+            ) : (
+              <div className="font-mono text-[11px] text-faint2">
+                offline · run the backend (uvicorn) to stream realtime frames
+              </div>
+            )}
           </div>
         </div>
       </div>

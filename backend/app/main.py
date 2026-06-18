@@ -14,11 +14,12 @@ Demo mode is the default: results are deterministic and require no ML stack
 import secrets
 from typing import Dict, Optional
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import __version__, demo, runtime
 from .pipeline import build_pipeline
+from .streaming import stream_endpoint
 from .schemas import (
     AnalysisMeta,
     AnalysisResponse,
@@ -152,6 +153,12 @@ def model_meta() -> ModelMetaResponse:
 @app.get("/api/model/card", response_model=ModelCardResponse)
 def model_card() -> ModelCardResponse:
     return demo.model_card(version=__version__, demo_mode=runtime.demo_mode())
+
+
+@app.websocket("/ws/stream")
+async def ws_stream(websocket: WebSocket) -> None:
+    """Realtime per-frame InferenceResult stream (see app/streaming.py)."""
+    await stream_endpoint(websocket)
 
 
 @app.get("/")

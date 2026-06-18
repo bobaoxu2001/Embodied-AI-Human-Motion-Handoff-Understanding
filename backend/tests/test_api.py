@@ -82,6 +82,28 @@ def test_action_scores_sum_close_to_one():
     assert abs(sum(fr.action.scores.values()) - 1.0) < 0.05
 
 
+def test_ws_stream_hello_and_seek():
+    with client.websocket_connect("/ws/stream") as ws:
+        hello = ws.receive_json()
+        assert hello["type"] == "hello"
+        assert hello["n_frames"] == demo.TOTAL_FRAMES
+
+        first = ws.receive_json()
+        assert "frame" in first and "action" in first  # InferenceResult shape
+
+        # seek into the handoff segment; within a few frames the stream lands there
+        ws.send_json({"type": "seek", "frame": 190})
+        landed = None
+        for _ in range(40):
+            msg = ws.receive_json()
+            if msg.get("frame") == 190:
+                landed = msg
+                break
+        assert landed is not None
+        assert landed["action"]["label"] == "handoff"
+        assert landed["handoff_intent"]["detected"] is True
+
+
 def test_model_card():
     r = client.get("/api/model/card")
     assert r.status_code == 200
