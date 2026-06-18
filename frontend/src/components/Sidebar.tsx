@@ -28,6 +28,12 @@ const ICONS: Record<string, (c: string) => JSX.Element> = {
       <rect x="14" y="14" width="7" height="7" rx="1.5" />
     </svg>
   ),
+  card: (c) => (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8">
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M7 9h6M7 13h10M7 17h8" strokeLinecap="round" />
+    </svg>
+  ),
   dataset: (c) => (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8">
       <ellipse cx="12" cy="6" rx="8" ry="3" />
@@ -45,6 +51,7 @@ const WORKSPACE: NavItem[] = [
   { to: "/analyze", label: "Video analysis", icon: ICONS.video },
   { to: "/pose", label: "3D pose viewer", icon: ICONS.pose },
   { to: "/inspector", label: "Model inspector", icon: ICONS.inspector },
+  { to: "/model-card", label: "Model card", icon: ICONS.card },
   { to: "/dataset", label: "Dataset & eval", icon: ICONS.dataset },
 ];
 

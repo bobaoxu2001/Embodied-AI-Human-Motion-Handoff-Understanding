@@ -54,7 +54,7 @@ export function Overview() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => navigate("/inspector")}
+            onClick={() => navigate("/model-card")}
             className="bg-transparent border border-line-strong text-muted text-[13px] font-medium px-4 py-[9px] rounded-lg cursor-pointer hover:text-ink"
           >
             Model card

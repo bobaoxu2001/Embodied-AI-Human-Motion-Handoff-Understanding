@@ -1,4 +1,10 @@
-import { CLASS_DIST, DATASET_SOURCES, FAILURE_CASES } from "../data/demo";
+import {
+  CAPTURE_PROTOCOL,
+  CLASS_DIST,
+  DATASET_SOURCES,
+  FAILURE_CASES,
+  SPLIT_INFO,
+} from "../data/demo";
 
 export function DatasetEval() {
   const distMax = Math.max(...CLASS_DIST.map((d) => d.count));
@@ -26,6 +32,47 @@ export function DatasetEval() {
             <div className="font-mono text-[13px]" style={{ color: s.accent }}>{s.clips}</div>
           </div>
         ))}
+      </div>
+
+      {/* capture protocol + split */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-[18px] mb-[18px]">
+        <div className="border border-line-strong bg-panel rounded-[12px] p-[18px]">
+          <div className="font-mono text-[10px] tracking-[0.12em] uppercase text-faint mb-[14px]">
+            capture protocol · self-recorded set
+          </div>
+          <div className="flex flex-col gap-[11px]">
+            {CAPTURE_PROTOCOL.map((p) => (
+              <div key={p.k} className="grid grid-cols-[78px_1fr] gap-3 items-baseline">
+                <span className="font-mono text-[11px] text-faint2">{p.k}</span>
+                <span className="text-[12.5px] text-[#cdd6e2] leading-[1.4]">{p.v}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="border border-line-strong bg-panel rounded-[12px] p-[18px]">
+          <div className="font-mono text-[10px] tracking-[0.12em] uppercase text-faint mb-[6px]">
+            split · by subject
+          </div>
+          <div className="text-[11.5px] text-faint mb-[16px] leading-[1.45]">
+            grouped per person to avoid identity leakage
+          </div>
+          <div className="flex h-[14px] rounded-[5px] overflow-hidden mb-4">
+            {SPLIT_INFO.map((s) => (
+              <div key={s.label} style={{ width: `${s.pct}%`, background: s.color }} />
+            ))}
+          </div>
+          <div className="flex flex-col gap-[10px]">
+            {SPLIT_INFO.map((s) => (
+              <div key={s.label} className="flex items-center gap-[9px]">
+                <span className="w-[8px] h-[8px] rounded-[2px] flex-none" style={{ background: s.color }} />
+                <span className="w-[42px] text-[12.5px] text-[#cdd6e2] capitalize">{s.label}</span>
+                <span className="font-mono text-[11px] text-muted">{s.pct}%</span>
+                <span className="font-mono text-[10.5px] text-faint ml-auto">{s.note}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-[18px]">

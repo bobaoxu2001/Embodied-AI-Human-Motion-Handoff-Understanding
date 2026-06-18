@@ -113,6 +113,38 @@ class ModelMetaResponse(BaseModel):
     latency_ms: List[Dict[str, object]]
 
 
+class ModelCardModel(BaseModel):
+    """One learned model within the pipeline."""
+
+    stage: str
+    name: str
+    type: str
+    learned: bool = True
+    input: str
+    output: str
+    params: str
+    config: str
+    loss: str
+    metric: str
+
+
+class ModelCardResponse(BaseModel):
+    """Structured model card — mirrors docs/MODEL_CARD.md and the UI route."""
+
+    version: str
+    demo_mode: bool
+    task: str
+    license: str
+    repo: str
+    doc: str
+    intended_use: List[str]
+    out_of_scope: List[str]
+    data: List[str]
+    training: Dict[str, str]
+    models: List[ModelCardModel]
+    limitations: List[Dict[str, str]]
+
+
 class AnalyzeRequestInfo(BaseModel):
     """Echoed back so the client can confirm how the clip was handled."""
 

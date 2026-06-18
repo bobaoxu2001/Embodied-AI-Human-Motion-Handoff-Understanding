@@ -4,14 +4,7 @@
 // lerp between sparse keyframes each frame (+ tiny sinusoidal jitter) and every
 // derived label/confidence follows the current `frame` (HANDOFF.md §4–§5).
 
-import {
-  FPS,
-  HANDOFF_BASE,
-  ROBOT_MAP,
-  SEGMENTS,
-  TOTAL_FRAMES,
-  WRIST_KF,
-} from "../data/demo";
+import { FPS, getScenario, TOTAL_FRAMES, WRIST_KF } from "../data/demo";
 import type { ActionLabel } from "../types";
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -53,6 +46,9 @@ export interface Derived {
   futureTarget: string;
   activeChips: Record<string, boolean>;
   chipColor: string;
+  objectLabel: string;
+  scenarioId: string;
+  scenarioNote: string;
   pose: {
     rwrist: { x: number; y: number };
     relbow: { x: number; y: number };
@@ -63,10 +59,12 @@ export interface Derived {
   };
 }
 
-export function derive(frameInput: number): Derived {
+export function derive(frameInput: number, scenarioId = "success"): Derived {
   const f = Math.max(0, Math.min(TOTAL_FRAMES - 1, Math.round(frameInput)));
 
-  const cur = SEGMENTS.find((d) => f >= d.start && f < d.end) || SEGMENTS[0];
+  const scenario = getScenario(scenarioId);
+  const { segments, handoffBase, robotMap } = scenario;
+  const cur = segments.find((d) => f >= d.start && f < d.end) || segments[0];
   const curLabelKey = cur.key === "idle2" ? "idle" : cur.key;
 
   const secs = f / FPS;
@@ -77,12 +75,12 @@ export function derive(frameInput: number): Derived {
     String(Math.floor((secs % 1) * 10));
 
   // handoff intent confidence: smooth, peaks during handoff
-  const base = HANDOFF_BASE[cur.key];
+  const base = handoffBase[cur.key];
   const noise = Math.sin(f / 5) * 0.018;
   const hc = Math.max(0, Math.min(0.99, base + noise));
   const hi = hc >= 0.8;
 
-  const [robotAction, robotActionSub] = ROBOT_MAP[cur.key];
+  const [robotAction, robotActionSub] = robotMap[cur.key];
 
   // chip active states
   const activeChips: Record<string, boolean> = {};
@@ -135,6 +133,9 @@ export function derive(frameInput: number): Derived {
     futureTarget,
     activeChips,
     chipColor: cur.color,
+    objectLabel: scenario.object,
+    scenarioId: scenario.id,
+    scenarioNote: scenario.note,
     pose: {
       rwrist: { x: Number(r1(wx)), y: Number(r1(wy)) },
       relbow: { x: Number(r1(elbx)), y: Number(r1(elby)) },

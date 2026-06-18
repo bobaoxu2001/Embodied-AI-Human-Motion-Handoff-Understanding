@@ -6,6 +6,7 @@ const TITLES: Record<string, [string, string]> = {
   "/analyze": ["Video analysis", "workspace / live inference"],
   "/pose": ["3D pose viewer", "workspace / reconstruction"],
   "/inspector": ["Model inspector", "workspace / architecture"],
+  "/model-card": ["Model card", "workspace / documentation"],
   "/dataset": ["Dataset & evaluation", "workspace / data"],
   "/handoff": ["Implementation handoff", "workspace / dev export"],
 };

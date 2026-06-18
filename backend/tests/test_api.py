@@ -80,3 +80,14 @@ def test_demo_engine_deterministic():
 def test_action_scores_sum_close_to_one():
     fr = demo.derive_frame(180)
     assert abs(sum(fr.action.scores.values()) - 1.0) < 0.05
+
+
+def test_model_card():
+    r = client.get("/api/model/card")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["license"] == "MIT"
+    assert len(body["models"]) == 4
+    names = {m["name"] for m in body["models"]}
+    assert {"PoseLiftingNet", "ActionTCN", "TrajectoryGRU", "IntentMLP"} == names
+    assert body["intended_use"] and body["out_of_scope"] and body["limitations"]

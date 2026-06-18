@@ -9,6 +9,7 @@ backend/data/keypoints/
 backend/data/splits/
 backend/data/manifest.csv
 backend/ml/weights/
+backend/ml/checkpoints/
 backend/uploads/
 
 # ---- Node / frontend ----

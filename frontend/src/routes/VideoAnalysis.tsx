@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { usePlayback } from "../state/playback";
 import { derive } from "../lib/demoEngine";
-import { SEGMENTS, TOTAL_FRAMES } from "../data/demo";
+import { SCENARIOS, TOTAL_FRAMES, getScenario } from "../data/demo";
 import { SkeletonOverlay } from "../components/SkeletonOverlay";
 import { LabBackground } from "../components/LabBackground";
 import { ScrubBar } from "../components/ScrubBar";
@@ -22,7 +22,9 @@ const CHIP_LABEL: Record<string, string> = {
 
 export function VideoAnalysis() {
   const { frame, seekTo } = usePlayback();
-  const d = derive(frame);
+  const [scenario, setScenario] = useState("success");
+  const d = derive(frame, scenario);
+  const segments = getScenario(scenario).segments;
 
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState("handoff_clip_07.mp4");
@@ -58,6 +60,31 @@ export function VideoAnalysis() {
 
   return (
     <div>
+      {/* scenario selector */}
+      <div className="mb-[14px] flex flex-wrap items-center gap-2">
+        <span className="font-mono text-[10px] tracking-[0.1em] uppercase text-faint mr-1">
+          scenario
+        </span>
+        {SCENARIOS.map((s) => {
+          const on = s.id === scenario;
+          return (
+            <button
+              key={s.id}
+              onClick={() => setScenario(s.id)}
+              title={s.desc}
+              className="font-mono text-[11px] px-[11px] py-[6px] rounded-[7px] transition-colors"
+              style={
+                on
+                  ? { background: s.badgeColor + "1f", color: s.badgeColor, border: `1px solid ${s.badgeColor}66` }
+                  : { background: "#0e131a", color: "#8893a3", border: "1px solid #1a222e" }
+              }
+            >
+              {s.label}
+            </button>
+          );
+        })}
+      </div>
+
       <div className="grid grid-cols-1 xl:grid-cols-[1.55fr_1fr] gap-[18px]">
         {/* video panel */}
         <div className="border border-line-strong rounded-[13px] overflow-hidden bg-deep">
@@ -123,6 +150,14 @@ export function VideoAnalysis() {
             />
             {statusLine}
           </div>
+
+          {/* scenario decision note */}
+          {d.scenarioNote && (
+            <div className="flex items-center gap-[7px] px-[14px] py-[8px] border-t border-line bg-deep font-mono text-[10px] text-warn">
+              <span className="w-[6px] h-[6px] rounded-full bg-warn animate-pulse flex-none" />
+              {d.scenarioNote}
+            </div>
+          )}
         </div>
 
         {/* inference cards */}
@@ -232,7 +267,7 @@ export function VideoAnalysis() {
           onTouchStart={onTimeline}
           className="relative h-[46px] rounded-[8px] overflow-hidden bg-deep flex cursor-pointer"
         >
-          {SEGMENTS.map((seg, i) => {
+          {segments.map((seg, i) => {
             const active = seg.key === d.segmentKey;
             return (
               <div

@@ -67,11 +67,21 @@ export function SkeletonOverlay({ d }: { d: Derived }) {
           <line x1="0" y1="0" x2="18" y2="16" />
         </g>
 
+        {/* distractor object bbox (only in the distractor scenario) */}
+        {d.scenarioId === "distractor" && (
+          <g transform="translate(150 250)" opacity="0.7">
+            <rect x="0" y="0" width="48" height="52" rx="2" fill="none" stroke="#ffd24d" strokeWidth="1.6" strokeDasharray="4 4" />
+            <text x="0" y="-6" fontFamily="JetBrains Mono" fontSize="10" fill="#ffd24d">
+              distractor · bottle 0.71
+            </text>
+          </g>
+        )}
+
         {/* object bbox */}
         <g transform={`translate(${pose.obj.x} ${pose.obj.y})`}>
           <rect x="0" y="0" width="62" height="66" rx="2" fill="none" stroke="#ff8a3d" strokeWidth="1.8" strokeDasharray="5 4" />
           <text x="0" y="-6" fontFamily="JetBrains Mono" fontSize="11" fill="#ff8a3d">
-            cup 0.97
+            {d.objectLabel} 0.97
           </text>
         </g>
 

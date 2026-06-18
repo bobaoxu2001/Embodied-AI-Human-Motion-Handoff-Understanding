@@ -30,7 +30,8 @@ behind the same API with **no frontend changes**.
 | **Video analysis** | `/analyze` | Play a clip with skeleton/hand/bbox/trajectory overlays + live per-frame inference cards, draggable timeline, **upload-with-demo-fallback** |
 | **3D pose viewer** | `/pose` | Reconstructed 3D skeleton, camera orbit controls, frame scrubber |
 | **Model inspector** | `/inspector` | Architecture graph, metrics, deployment status, latency budget |
-| **Dataset & evaluation** | `/dataset` | Data sources, action-class distribution, failure cases |
+| **Model card** | `/model-card` | Per-model architecture, training config, intended use, limitations — also at [docs/MODEL_CARD.md](docs/MODEL_CARD.md) and `GET /api/model/card` |
+| **Dataset & evaluation** | `/dataset` | Data sources, capture protocol, by-subject split, class distribution, failure cases |
 | **Implementation handoff** | `/handoff` | The build contract mirrored on-screen |
 
 The dark "robotics-lab" UI is a faithful build of the **Claude Design handoff** preserved
@@ -111,9 +112,19 @@ on the *Video analysis* page to exercise the `POST /api/analyze-video` path.
 ### 3) Demo mode is the default
 
 You don't have to do anything special — both halves run in demo mode out of the box and
-return deterministic, realistic results. To wire up real models later, install
-`backend/requirements-ml.txt`, train, export ONNX into `backend/ml/weights/`, and demo
-mode flips off automatically. See [docs/DEMO_MODE.md](docs/DEMO_MODE.md).
+return deterministic, realistic results. To wire up real models:
+
+```bash
+pip install -r backend/requirements-ml.txt
+python backend/ml/train.py --model trajectory   # also: action / lifting / intent
+python backend/ml/export_onnx.py --out ml/weights
+```
+
+`ml/train.py` trains the real `nn.Module`s on extracted keypoints; `export_onnx.py` loads
+the checkpoints and emits ONNX graphs. The pipeline stages then run those graphs via
+onnxruntime automatically (`backend/app/pipeline/base.py`), `runtime.demo_mode()` flips to
+`False`, and the API contract is unchanged. See [docs/DEMO_MODE.md](docs/DEMO_MODE.md) and
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#going-from-demo--real-models).
 
 ---
 
@@ -126,6 +137,7 @@ mode flips off automatically. See [docs/DEMO_MODE.md](docs/DEMO_MODE.md).
 | `GET`  | `/api/analysis/{id}` | full analysis: meta + segments + sample frame |
 | `GET`  | `/api/analysis/{id}/frames/{n}` | one frame → `InferenceResult` |
 | `GET`  | `/api/model/meta` | architecture + metrics + latency budget |
+| `GET`  | `/api/model/card` | structured model card (per-model arch, training, limits) |
 
 The `InferenceResult` payload (per-frame action, handoff intent, 2D/3D pose, object,
 trajectory, robot action) is identical in the Pydantic schema and the TypeScript type —
@@ -176,7 +188,8 @@ cd frontend && npm run build                              # type-check + product
 ├─ backend/                  # FastAPI
 │  ├─ app/{main,schemas,demo,runtime}.py
 │  ├─ app/pipeline/          # stage interfaces + MediaPipe wrapper + demo stubs
-│  ├─ ml/models/             # PyTorch stubs (lifting, action, trajectory, intent)
+│  ├─ ml/models/             # PyTorch models (lifting, action, trajectory, intent)
+│  ├─ ml/train.py            # real training loops; ml/export_onnx.py → ONNX weights
 │  ├─ scripts/               # dataset manifest / keypoints / split / validate
 │  ├─ eval/                  # action, handoff PRF, trajectory ADE/FDE, runtime
 │  └─ tests/

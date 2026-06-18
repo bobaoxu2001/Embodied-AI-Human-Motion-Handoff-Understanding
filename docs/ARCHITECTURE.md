@@ -74,11 +74,19 @@ frontend/src/
 ## Going from demo → real models
 
 1. `pip install -r backend/requirements-ml.txt` (torch, onnxruntime, opencv, mediapipe).
-2. Collect & label clips ([docs/DATASET.md](DATASET.md)); extract keypoints.
-3. Train the four learned stages (`backend/ml/models/*`); the architectures are real
-   `nn.Module`s ready to train.
-4. `python backend/ml/export_onnx.py --out ml/weights` to emit ONNX graphs.
-5. Implement each stage's `_build_model`/`_run_real` to load ONNX/torch and run inference.
+2. Collect & label clips ([docs/DATASET.md](DATASET.md)); extract keypoints
+   (`scripts/extract_keypoints.py`).
+3. **Train** the learned stages with [`ml/train.py`](../backend/ml/train.py)
+   (`--model {lifting,action,trajectory,intent}`). The architectures are real
+   `nn.Module`s; `trajectory` (self-supervised) and `action` (manifest labels) train end
+   to end from keypoints alone, `lifting`/`intent` take extra 3D / intent labels. Saves
+   `ml/checkpoints/<model>.pt`.
+4. **Export:** `python ml/export_onnx.py --out ml/weights` loads those checkpoints and
+   emits `<stage>.onnx` graphs (opset 17, optional int8).
+5. **Inference is already wired:** `Stage` ([pipeline/base.py](../backend/app/pipeline/base.py))
+   runs the matching ONNX graph via onnxruntime when `demo=False` and the weights exist —
+   no per-stage code to write. Heavy imports stay inside the real path so demo mode keeps
+   zero ML deps.
 6. Restart — `runtime.demo_mode()` is now `False`; the API contract is unchanged, so **no
    frontend changes** are needed.
 

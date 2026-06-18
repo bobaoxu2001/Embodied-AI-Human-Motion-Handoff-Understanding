@@ -24,6 +24,7 @@ from .schemas import (
     AnalysisResponse,
     HealthResponse,
     InferenceResult,
+    ModelCardResponse,
     ModelMetaResponse,
 )
 
@@ -146,6 +147,11 @@ def model_meta() -> ModelMetaResponse:
             {"stage": "handoff_intent", "ms": 3.4},
         ],
     )
+
+
+@app.get("/api/model/card", response_model=ModelCardResponse)
+def model_card() -> ModelCardResponse:
+    return demo.model_card(version=__version__, demo_mode=runtime.demo_mode())
 
 
 @app.get("/")

@@ -16,6 +16,8 @@ from .schemas import (
     AnalysisResponse,
     HandoffIntent,
     InferenceResult,
+    ModelCardModel,
+    ModelCardResponse,
     ObjectDet,
     Pose2D,
     Pose3D,
@@ -200,6 +202,101 @@ def derive_frame(frame: int, session_id: str = "clp_demo", demo_mode: bool = Tru
             params={"open": seg_key == "handoff", "approach": [0.62, 0.41, 0.30]},
             priority=priority,  # type: ignore[arg-type]
         ),
+    )
+
+
+REPO_URL = "https://github.com/bobaoxu2001/Embodied-AI-Human-Motion-Handoff-Understanding"
+
+
+def model_card(version: str, demo_mode: bool) -> ModelCardResponse:
+    """Structured model card — the Python twin of the frontend MODEL_CARD constant
+    and a machine-readable mirror of docs/MODEL_CARD.md."""
+    return ModelCardResponse(
+        version=version,
+        demo_mode=demo_mode,
+        task="Human→robot handoff perception for HRI: RGB video → per-frame 3D pose, "
+        "action, hand-trajectory forecast, and a binary handoff-intent decision.",
+        license="MIT",
+        repo=REPO_URL,
+        doc="docs/MODEL_CARD.md",
+        intended_use=[
+            "Research / portfolio demo of a real-time HRI handoff-perception pipeline.",
+            "Reference for shipping a contract-stable perception service (demo → real).",
+        ],
+        out_of_scope=[
+            "Safety-critical robot control without a human supervisor + safety layer.",
+            "Surveillance, identification, or biometric profiling.",
+            "Use outside the captured distribution without re-training.",
+        ],
+        data=[
+            "~150 self-recorded handoff clips · controlled lab · 2-3 cams · 1280x720@30fps.",
+            "Lifting supervision: multi-view triangulation and/or Human3.6M / H3WB.",
+            "Optional HOI4D-inspired priors; planned Ego4D-style egocentric extension.",
+            "Self-recorded with informed consent; public sets under their own licenses.",
+        ],
+        training={
+            "optimizer": "AdamW, lr 1e-3 (cosine), weight decay 1e-4",
+            "batch_size": "64",
+            "epochs": "60 (early-stop on val)",
+            "window": "27 frames @ 30fps (lifting / action)",
+            "augmentation": "h-flip, keypoint jitter, temporal crop",
+            "split": "by subject (avoid identity leakage)",
+            "export": "ONNX opset 17, optional int8",
+        },
+        models=[
+            ModelCardModel(
+                stage="02",
+                name="PoseLiftingNet",
+                type="Temporal Transformer encoder (centre-frame regression)",
+                input="[B, 27, 34] 2D keypoint window",
+                output="[B, 51] root-relative 3D joints (mm)",
+                params="~3.2M",
+                config="d_model=256, heads=8, layers=4, GELU",
+                loss="MPJPE",
+                metric="MPJPE (mm) ↓",
+            ),
+            ModelCardModel(
+                stage="03",
+                name="ActionTCN",
+                type="Causal dilated Temporal Conv Net",
+                input="[B, T, 51] pose features",
+                output="[B, 6] action logits",
+                params="~0.6M",
+                config="ch=128, dilations=(1,2,4,8), causal",
+                loss="class-weighted cross-entropy",
+                metric="top-1 84.5% (demo) · per-class recall",
+            ),
+            ModelCardModel(
+                stage="04",
+                name="TrajectoryGRU",
+                type="Seq2seq GRU (autoregressive decoder)",
+                input="[B, T_in, 2] wrist history",
+                output="[B, 30, 2] 1.0s future path",
+                params="~0.15M",
+                config="hidden=128, 30-step roll-out",
+                loss="ADE + FDE",
+                metric="ADE 52mm · FDE 96mm (demo)",
+            ),
+            ModelCardModel(
+                stage="05",
+                name="IntentMLP",
+                type="Fusion MLP classification head",
+                input="[B, ~160] pose+motion+action feats",
+                output="[B] logit → P(handoff)",
+                params="~30K",
+                config="160→128→64→1, ReLU, dropout 0.2, thr 0.80",
+                loss="binary cross-entropy",
+                metric="intent acc 89.2% (demo) · P/R/F1",
+            ),
+        ],
+        limitations=[
+            {"mode": "Occlusion (object/self)", "effect": "drops hand kpts (~-8% recall)"},
+            {"mode": "Fast hand motion / blur", "effect": "+~12mm FDE"},
+            {"mode": "Poor lighting", "effect": "sensor noise (~-6% recall)"},
+            {"mode": "Multiple people", "effect": "association ambiguity / id-switches"},
+            {"mode": "Unusual camera angles", "effect": "top-down / oblique degrade lifting"},
+            {"mode": "Distractor objects", "effect": "intent confidence drops; target ambiguity"},
+        ],
     )
 
 

@@ -27,14 +27,22 @@ def main():
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
+    ckpt_dir = Path(__file__).resolve().parent / "checkpoints"
 
+    # (onnx_name, model, example_input, checkpoint stem written by ml/train.py)
     specs = [
-        ("lifting_2d_to_3d", build_lifting(), torch.randn(1, 27, 34)),
-        ("action_recognition", build_action(), torch.randn(1, 27, 51)),
-        ("trajectory_forecast", build_trajectory(), torch.randn(1, 10, 2)),
-        ("handoff_intent", build_intent(), torch.randn(1, 160)),
+        ("lifting_2d_to_3d", build_lifting(), torch.randn(1, 27, 34), "lifting"),
+        ("action_recognition", build_action(), torch.randn(1, 27, 51), "action"),
+        ("trajectory_forecast", build_trajectory(), torch.randn(1, 10, 2), "trajectory"),
+        ("handoff_intent", build_intent(), torch.randn(1, 160), "intent"),
     ]
-    for name, model, x in specs:
+    for name, model, x, ckpt in specs:
+        ckpt_path = ckpt_dir / f"{ckpt}.pt"
+        if ckpt_path.exists():
+            model.load_state_dict(torch.load(ckpt_path, map_location="cpu"))
+            print(f"loaded trained weights {ckpt_path}")
+        else:
+            print(f"[warn] {ckpt_path} missing — exporting UNTRAINED {name}")
         model.eval()
         path = out / f"{name}.onnx"
         torch.onnx.export(
