@@ -1,4 +1,5 @@
 import { ARCH_CARDS, DEPLOY, LATENCY, METRICS } from "../data/demo";
+import { ReadinessPanel } from "../components/ReadinessPanel";
 
 export function ModelInspector() {
   return (
@@ -7,6 +8,10 @@ export function ModelInspector() {
         <span className="w-[6px] h-[6px] rounded-[2px] bg-warn" />
         demo-mode metrics — simulated on a 150-clip MVP set; targets, not production
         benchmarks
+      </div>
+
+      <div className="mb-5">
+        <ReadinessPanel />
       </div>
 
       {/* metric grid */}

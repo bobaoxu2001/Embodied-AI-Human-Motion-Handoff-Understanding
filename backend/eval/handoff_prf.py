@@ -13,7 +13,31 @@ Usage:
 import argparse
 import csv
 import random
+import sys
 from pathlib import Path
+
+BACKEND = Path(__file__).resolve().parent.parent
+
+
+def measured(manifest, keypoints, weights, split):
+    """Score split clips with a trained intent baseline → [(target, score), ...]."""
+    sys.path.insert(0, str(BACKEND))
+    from ml import baseline as B
+
+    ckpt = B.load_ckpt(weights)
+    if ckpt.get("model") != "intent":
+        raise SystemExit(f"--weights is not an intent checkpoint ({ckpt.get('model')}).")
+    rows = B.rows_for_split(B.read_manifest(manifest), split)
+    data = []
+    for r in rows:
+        frames = B.load_frames(keypoints, r["clip_id"])
+        if not frames:
+            continue
+        target = 1 if r.get("label") == "handoff" else 0
+        data.append((target, B.predict_intent_score(ckpt, B.clip_feature(frames))))
+    if not data:
+        raise SystemExit("no clips with keypoints in this split.")
+    return data
 
 
 def load(path: Path):
@@ -60,15 +84,22 @@ def prf(data, threshold):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--preds", type=str, default=None)
-    ap.add_argument("--threshold", type=float, default=0.8)
+    ap.add_argument("--manifest", type=str, default=None)
+    ap.add_argument("--keypoints", type=str, default=None)
+    ap.add_argument("--weights", type=str, default=None)
+    ap.add_argument("--split", type=str, default="test")
+    ap.add_argument("--threshold", type=float, default=0.5)
     ap.add_argument("--demo", action="store_true")
     args = ap.parse_args()
 
-    if args.demo or not args.preds:
-        data = demo()
-        print("[demo] synthetic handoff scores (no --preds given)\n")
-    else:
+    if args.weights and args.manifest and args.keypoints:
+        data = measured(args.manifest, args.keypoints, args.weights, args.split)
+        print(f"[measured] baseline on split='{args.split}'\n")
+    elif args.preds and not args.demo:
         data = load(Path(args.preds))
+    else:
+        data = demo()
+        print("[demo] synthetic handoff scores\n")
 
     p, r, f1, acc, (tp, fp, tn, fn) = prf(data, args.threshold)
     print(f"samples   : {len(data)}   threshold: {args.threshold}")

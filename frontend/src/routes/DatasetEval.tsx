@@ -5,11 +5,15 @@ import {
   FAILURE_CASES,
   SPLIT_INFO,
 } from "../data/demo";
+import { ReadinessPanel } from "../components/ReadinessPanel";
 
 export function DatasetEval() {
   const distMax = Math.max(...CLASS_DIST.map((d) => d.count));
   return (
     <div>
+      <div className="mb-6">
+        <ReadinessPanel />
+      </div>
       <div className="font-mono text-[10px] tracking-[0.12em] uppercase text-faint mb-3">
         data sources
       </div>

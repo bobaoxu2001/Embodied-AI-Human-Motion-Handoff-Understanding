@@ -7,6 +7,7 @@ import { PoseViewer3D } from "./routes/PoseViewer3D";
 import { ModelInspector } from "./routes/ModelInspector";
 import { ModelCard } from "./routes/ModelCard";
 import { DatasetEval } from "./routes/DatasetEval";
+import { CaptureBuilder } from "./routes/CaptureBuilder";
 import { Handoff } from "./routes/Handoff";
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/inspector" element={<ModelInspector />} />
           <Route path="/model-card" element={<ModelCard />} />
           <Route path="/dataset" element={<DatasetEval />} />
+          <Route path="/capture" element={<CaptureBuilder />} />
           <Route path="/handoff" element={<Handoff />} />
         </Route>
         <Route path="*" element={<Overview />} />

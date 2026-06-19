@@ -187,6 +187,58 @@ Honest summary of what data is where. Full detail:
 
 ---
 
+## Next: From Demo Mode to Real MVP
+
+A practical, honest path from the simulated demo to **measured** baselines on a
+**self-recorded** set. Full detail: [REAL_DATA_MVP_PLAN.md](docs/REAL_DATA_MVP_PLAN.md),
+[DATA_CAPTURE_WORKFLOW.md](docs/DATA_CAPTURE_WORKFLOW.md),
+[TRAINING_BASELINES.md](docs/TRAINING_BASELINES.md). The *Dataset* and *Model inspector*
+pages show a live **real-data readiness** checklist.
+
+**1) Record a 40–60 clip pilot** (≈6–8 per class, grow to 120–180 later) across
+`idle · walking · reaching · grasping · placing · pointing · handoff`. Use the in-app
+**Data capture** page (`/capture`) — webcam/upload, **local only, nothing uploaded** — or
+record manually as `s01_handoff_front_001.mp4` under `backend/data/raw/<label>/`.
+
+**2–4) Build the dataset** (standard library; install `requirements-ml.txt` for real keypoints):
+
+```bash
+cd backend && source .venv/bin/activate
+python scripts/create_dataset_manifest.py --videos data/raw --out data/manifest.csv
+python scripts/extract_keypoints.py        --manifest data/manifest.csv --out data/keypoints
+python scripts/split_dataset.py            --manifest data/manifest.csv --out data/splits --by-subject
+python scripts/validate_dataset.py         --manifest data/manifest.csv --keypoints data/keypoints --check-files
+```
+
+**5) Train baselines** (default backend is **stdlib, no torch** — runs on tiny data):
+
+```bash
+python ml/train.py --model action --manifest data/manifest.csv --keypoints data/keypoints --out ml/weights/action_baseline.pt
+python ml/train.py --model intent --manifest data/manifest.csv --keypoints data/keypoints --out ml/weights/intent_baseline.pt
+```
+
+**6) Evaluate (measured)**:
+
+```bash
+python eval/action_accuracy.py    --manifest data/manifest.csv --keypoints data/keypoints --weights ml/weights/action_baseline.pt --split test
+python eval/handoff_prf.py        --manifest data/manifest.csv --keypoints data/keypoints --weights ml/weights/intent_baseline.pt --split test
+python eval/trajectory_ade_fde.py --manifest data/manifest.csv --keypoints data/keypoints --split test
+```
+
+**Interpreting results (honest):** action = softmax-regression baseline, intent =
+logistic-regression baseline, trajectory = **constant-velocity heuristic**. On tiny or
+synthetic-keypoint data the numbers are weak by design — a useful baseline should beat the
+**majority class** on a real **by-subject** test split. Report accuracy **with** per-class
+recall + confusion. Don't invent millimetres for trajectory without a real calibration.
+
+**What remains simulated** until you finish the checklist: the on-screen metrics, the
+demo timeline, and the deterministic per-frame inference (all marked `DEMO MODE`). The
+backend trained models are **not active** until ONNX weights exist; the live Vercel site is
+**static frontend + browser MediaPipe + demo fallback** (no FastAPI) —
+see [DEPLOYMENT_NOTES.md](docs/DEPLOYMENT_NOTES.md).
+
+---
+
 ## Dataset & evaluation tooling
 
 Runnable end-to-end with the standard library (OpenCV/MediaPipe optional):

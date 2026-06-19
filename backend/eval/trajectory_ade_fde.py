@@ -16,7 +16,22 @@ import argparse
 import json
 import math
 import random
+import sys
 from pathlib import Path
+
+BACKEND = Path(__file__).resolve().parent.parent
+
+
+def measured_sequences(manifest, keypoints, split):
+    """Constant-velocity heuristic predictions vs ground-truth wrist tracks."""
+    sys.path.insert(0, str(BACKEND))
+    from ml import baseline as B
+
+    rows = B.rows_for_split(B.read_manifest(manifest), split)
+    seqs = B.trajectory_sequences(rows, keypoints)
+    if not seqs:
+        raise SystemExit("no trajectory windows in this split (need longer clips).")
+    return seqs
 
 
 def _euclid(a, b):
@@ -57,23 +72,37 @@ def demo(n=120, horizon=30, seed=3):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--preds", type=str, default=None)
+    ap.add_argument("--manifest", type=str, default=None)
+    ap.add_argument("--keypoints", type=str, default=None)
+    ap.add_argument("--split", type=str, default="test")
     ap.add_argument("--scale-mm", type=float, default=None,
                     help="multiply normalized displacement by this to get mm")
     ap.add_argument("--demo", action="store_true")
     args = ap.parse_args()
 
-    if args.demo or not args.preds:
-        seqs = demo()
-        print("[demo] synthetic trajectories (no --preds given)\n")
-    else:
+    measured = bool(args.manifest and args.keypoints)
+    if measured:
+        seqs = measured_sequences(args.manifest, args.keypoints, args.split)
+        print(f"[measured] constant-velocity HEURISTIC baseline on split='{args.split}'\n")
+    elif args.preds and not args.demo:
         seqs = json.loads(Path(args.preds).read_text())
+    else:
+        seqs = demo()
+        print("[demo] synthetic trajectories\n")
 
     ade, fde, n = ade_fde(seqs)
-    # Default demo scaling lands near the prototype's 52mm / 96mm.
-    scale = args.scale_mm if args.scale_mm is not None else (52.0 / ade if ade else 1.0)
     print(f"sequences : {n}")
-    print(f"ADE       : {ade:.4f} norm   ({ade * scale:.1f} mm)")
-    print(f"FDE       : {fde:.4f} norm   ({fde * scale:.1f} mm)")
+    if measured:
+        # Honest: report normalized error. mm only if a real pixel→mm scale is given.
+        print(f"ADE       : {ade:.4f} norm" + (f"   ({ade * args.scale_mm:.1f} mm)" if args.scale_mm else ""))
+        print(f"FDE       : {fde:.4f} norm" + (f"   ({fde * args.scale_mm:.1f} mm)" if args.scale_mm else ""))
+        if not args.scale_mm:
+            print("note: pass --scale-mm <px-to-mm> for a calibrated mm figure.")
+    else:
+        # Demo scaling lands near the prototype's 52mm / 96mm placeholders.
+        scale = args.scale_mm if args.scale_mm is not None else (52.0 / ade if ade else 1.0)
+        print(f"ADE       : {ade:.4f} norm   ({ade * scale:.1f} mm)")
+        print(f"FDE       : {fde:.4f} norm   ({fde * scale:.1f} mm)")
 
 
 if __name__ == "__main__":

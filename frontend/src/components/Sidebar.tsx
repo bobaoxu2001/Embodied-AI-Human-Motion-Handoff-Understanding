@@ -34,6 +34,12 @@ const ICONS: Record<string, (c: string) => JSX.Element> = {
       <path d="M7 9h6M7 13h10M7 17h8" strokeLinecap="round" />
     </svg>
   ),
+  capture: (c) => (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8">
+      <rect x="2" y="6" width="14" height="12" rx="2" />
+      <path d="M16 10l6-3v10l-6-3z" strokeLinejoin="round" />
+    </svg>
+  ),
   dataset: (c) => (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8">
       <ellipse cx="12" cy="6" rx="8" ry="3" />
@@ -53,6 +59,7 @@ const WORKSPACE: NavItem[] = [
   { to: "/inspector", label: "Model inspector", icon: ICONS.inspector },
   { to: "/model-card", label: "Model card", icon: ICONS.card },
   { to: "/dataset", label: "Dataset & eval", icon: ICONS.dataset },
+  { to: "/capture", label: "Data capture", icon: ICONS.capture },
 ];
 
 function Row({ item }: { item: NavItem }) {

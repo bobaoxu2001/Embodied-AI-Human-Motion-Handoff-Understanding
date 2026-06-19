@@ -8,6 +8,7 @@ const TITLES: Record<string, [string, string]> = {
   "/inspector": ["Model inspector", "workspace / architecture"],
   "/model-card": ["Model card", "workspace / documentation"],
   "/dataset": ["Dataset & evaluation", "workspace / data"],
+  "/capture": ["Data capture / dataset builder", "workspace / data"],
   "/handoff": ["Implementation handoff", "workspace / dev export"],
 };
 
