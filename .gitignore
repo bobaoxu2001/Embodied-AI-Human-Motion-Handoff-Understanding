@@ -12,6 +12,23 @@ backend/ml/weights/
 backend/ml/checkpoints/
 backend/uploads/
 
+# ---- Datasets: never commit raw/large data (keep small example manifests + docs) ----
+data/raw/
+data/external/
+data/processed/
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.npz
+*.pt
+*.pth
+*.onnx
+# keep committed example manifests
+!backend/data/examples/
+!backend/data/examples/**
+
 # ---- Node / frontend ----
 node_modules/
 frontend/dist/

@@ -24,6 +24,8 @@ def main():
     ap.add_argument("--ratios", type=float, nargs=3, default=[0.7, 0.15, 0.15],
                     metavar=("TRAIN", "VAL", "TEST"))
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--by-subject", action="store_true",
+                    help="group whole subjects into one split (needs subject_id; avoids leakage)")
     args = ap.parse_args()
 
     if abs(sum(args.ratios) - 1.0) > 1e-6:
@@ -38,13 +40,40 @@ def main():
         fields = reader.fieldnames or []
         rows = list(reader)
 
-    by_label = defaultdict(list)
-    for r in rows:
-        by_label[r.get("label", "unlabeled")].append(r)
-
     rng = random.Random(args.seed)
     tr_r, va_r, _te_r = args.ratios
     assigned = {"train": [], "val": [], "test": []}
+
+    # Group key: by whole subject (no identity leakage) or stratified by label.
+    if args.by_subject:
+        if not any(r.get("subject_id") for r in rows):
+            raise SystemExit("--by-subject needs a subject_id column (regenerate the manifest)")
+        groups = defaultdict(list)
+        for r in rows:
+            groups[r.get("subject_id") or "unknown"].append(r)
+        # assign each subject (as a unit) to a split by ratio
+        subjects = list(groups)
+        rng.shuffle(subjects)
+        n = len(subjects)
+        n_tr = max(1, int(round(n * tr_r)))
+        n_va = max(1, int(round(n * va_r))) if n >= 3 else 0
+        n_tr = min(n_tr, n - (1 if n >= 2 else 0))
+        # guarantee val and test each get ≥1 subject when there are enough
+        if n >= 3 and n - n_tr - n_va < 1:
+            n_tr = max(1, n - n_va - 1)
+        if n >= 3 and n_va == 0:
+            n_va, n_tr = 1, max(1, n_tr - 1)
+        for i, subj in enumerate(subjects):
+            split = "train" if i < n_tr else "val" if i < n_tr + n_va else "test"
+            for r in groups[subj]:
+                r["split"] = split
+                assigned[split].append(r["clip_id"])
+        _write_back(man, fields, rows, args.out, assigned, f"by-subject ({n} subjects)")
+        return
+
+    by_label = defaultdict(list)
+    for r in rows:
+        by_label[r.get("label", "unlabeled")].append(r)
 
     for label, group in by_label.items():
         rng.shuffle(group)
@@ -65,18 +94,22 @@ def main():
             r["split"] = split
             assigned[split].append(r["clip_id"])
 
-    # rewrite manifest with updated split column
+    _write_back(man, fields, rows, args.out, assigned, f"stratified-by-label (seed={args.seed})")
+
+
+def _write_back(man, fields, rows, out, assigned, how):
+    """Rewrite the manifest split column and emit per-split id lists."""
     with man.open("w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=fields)
         w.writeheader()
         w.writerows(rows)
 
-    out_dir = Path(args.out)
+    out_dir = Path(out)
     out_dir.mkdir(parents=True, exist_ok=True)
     for split, ids in assigned.items():
         (out_dir / f"{split}.txt").write_text("\n".join(ids) + ("\n" if ids else ""))
 
-    print(f"split {len(rows)} clips (seed={args.seed}):")
+    print(f"split {len(rows)} clips — {how}:")
     for split in ("train", "val", "test"):
         print(f"  {split:5s}: {len(assigned[split])}")
     print(f"wrote id lists → {out_dir}, updated split column in {man}")

@@ -1,5 +1,10 @@
 # Dataset collection guide
 
+> **See also (canonical):** the expanded guide
+> [dataset_collection_guide.md](dataset_collection_guide.md) (MVP plan + public-dataset
+> strategy), the comparison table [dataset_research.md](dataset_research.md), and licenses
+> [data_license_notes.md](data_license_notes.md). This page is the original short version.
+
 How to go from raw handoff videos to a trainable dataset. The tooling under
 `backend/scripts/` runs on the standard library; OpenCV/MediaPipe are used when
 installed and otherwise gracefully replaced with deterministic synthetic data so the

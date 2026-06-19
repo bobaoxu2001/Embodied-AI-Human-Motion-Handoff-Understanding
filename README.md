@@ -150,6 +150,43 @@ see `backend/app/schemas.py` and `frontend/src/types.ts`.
 
 ---
 
+## Dataset strategy
+
+Honest summary of what data is where. Full detail:
+[dataset_research.md](docs/dataset_research.md) (comparison table),
+[dataset_collection_guide.md](docs/dataset_collection_guide.md) (how to collect),
+[data_license_notes.md](docs/data_license_notes.md) (licenses & policy).
+
+- **Included in this repo:** code, docs, and a tiny **example manifest**
+  (`backend/data/examples/manifest.example.csv`). **No raw videos or large arrays** are
+  committed (see `.gitignore`).
+- **Simulated (demo mode):** all on-screen metrics and the per-frame inference are
+  **demo-mode simulated**; `extract_keypoints.py` falls back to **synthetic keypoints**
+  when MediaPipe/OpenCV aren't installed. Labelled `DEMO MODE` throughout.
+- **Real, today:** uploading a video on *Video analysis* runs **real client-side MediaPipe**
+  2D body+hand pose **in your browser** (no backend, no upload).
+- **Self-recorded MVP (planned primary set):** 120–180 short clips across
+  `idle · walking · reaching · grasping · placing · pointing · handoff` — video-level labels
+  first, segment-level later. Capture protocol + pipeline:
+  [dataset_collection_guide.md](docs/dataset_collection_guide.md).
+- **Public datasets (planned extension, download separately):** none are redistributed
+  here. Use official sources only, subset/metadata-first:
+
+  ```bash
+  # print official links + license + registration; prepare folders (no bulk download)
+  python backend/scripts/download_public_dataset_metadata.py --dataset all --dry-run
+  python backend/scripts/download_public_dataset_metadata.py --dataset h3wb --metadata-only
+  ```
+
+  Recommended roles: **H3WB / Human3.6M** → 2D→3D lifting (train/benchmark);
+  **HOI4D / DexYCB / EPIC-KITCHENS** → human-object interaction (pretrain/subset);
+  **Ego4D / Something-Something V2 / NTU RGB+D** → video-understanding references;
+  **HOH** → human→robot handover benchmark/inspiration; **InterHand2.6M** → hand-pose
+  pretrain. Framing is *"inspired by HOI4D/Ego4D-style tasks"* / *"planned extension"* —
+  not *"trained on"*.
+
+---
+
 ## Dataset & evaluation tooling
 
 Runnable end-to-end with the standard library (OpenCV/MediaPipe optional):

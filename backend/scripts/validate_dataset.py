@@ -20,7 +20,8 @@ import json
 from collections import Counter
 from pathlib import Path
 
-ACTIONS = {"idle", "reaching", "grasping", "placing", "pointing", "handoff", "unlabeled"}
+# Collection taxonomy (7) + unlabeled; the demo model is 6-class (no `walking`).
+ACTIONS = {"idle", "walking", "reaching", "grasping", "placing", "pointing", "handoff", "unlabeled"}
 REQUIRED_COLS = {"clip_id", "path", "label", "split"}
 N_BODY = 17
 N_HAND = 21
@@ -62,6 +63,21 @@ def main():
     splits = Counter(r.get("split", "unassigned") for r in rows)
     if splits.get("unassigned", 0) == len(rows):
         warnings.append("no splits assigned yet (run split_dataset.py)")
+
+    # by-subject leakage: a subject must not appear in more than one split
+    if any(r.get("subject_id") for r in rows):
+        subj_splits = {}
+        for r in rows:
+            subj = r.get("subject_id") or "unknown"
+            sp = r.get("split", "unassigned")
+            if subj == "unknown" or sp == "unassigned":
+                continue
+            subj_splits.setdefault(subj, set()).add(sp)
+        leaked = {s: sorted(sp) for s, sp in subj_splits.items() if len(sp) > 1}
+        if leaked:
+            errors.append(f"subject leakage across splits: {dict(list(leaked.items())[:5])}")
+        else:
+            print(f"by-subject: OK ({len(subj_splits)} subjects, no split leakage)")
 
     # keypoint coverage
     if args.keypoints:
