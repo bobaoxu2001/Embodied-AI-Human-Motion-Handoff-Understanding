@@ -1,0 +1,4 @@
+sample_id,subject_id,action_label,object_name,camera_view,fps,num_frames
+hoi4d_s1_001,s1,pickup,bottle,ego,15,90
+hoi4d_s2_002,s2,place,mug,ego,15,90
+hoi4d_s3_003,s3,reaching,kettle,ego,15,96

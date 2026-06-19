@@ -49,49 +49,66 @@ def run_baseline(args) -> None:
     sys.path.insert(0, str(BACKEND))
     from ml import baseline as B
 
-    if args.model == "lifting":
-        raise SystemExit("lifting needs --backend torch + 3D targets (see ml/train.py).")
-
     rows = B.read_manifest(BACKEND / args.manifest)
     kp = BACKEND / args.keypoints
     train_rows = B.rows_for_split(rows, "train")
     out = _resolve_out(args.out, args.model, ".json")
+    note = ("  note: baseline checkpoints are JSON (portable, no torch). Evaluate with "
+            "the matching eval/ script using --weights " + str(out))
 
     if args.model == "trajectory":
         seqs = B.trajectory_sequences(train_rows, kp)
-        ckpt = {"backend": "baseline", "model": "trajectory",
-                "kind": "constant_velocity", "t_in": 10, "horizon": 30,
-                "n_windows": len(seqs)}
-        B.save_ckpt(ckpt, out)
-        print(f"[baseline] trajectory = constant-velocity HEURISTIC (no training).")
-        print(f"  windows (train): {len(seqs)}")
-        print(f"  saved {out}  → evaluate: eval/trajectory_ade_fde.py "
-              f"--manifest {args.manifest} --keypoints {args.keypoints}")
+        B.save_ckpt({"backend": "baseline", "model": "trajectory",
+                     "kind": "constant_velocity", "t_in": 10, "horizon": 30,
+                     "n_windows": len(seqs)}, out)
+        print("[baseline] trajectory = constant-velocity HEURISTIC (no training).")
+        print(f"  windows (train): {len(seqs)}\n  saved {out}")
         return
 
-    feats, labels, ids = B.build_clip_dataset(train_rows, kp)
-    if len(feats) < 2:
-        raise SystemExit(
-            f"{args.model}: need ≥2 labelled clips with keypoints (got {len(feats)}). "
-            "Record clips and run extract_keypoints.py first."
-        )
+    if args.model == "lifting":
+        X, Y = B.build_lifting_dataset(train_rows, kp)
+        if len(X) < 2:
+            raise SystemExit(
+                "lifting: no frames with 3D targets (`body_3d`) found. Provide H3WB / "
+                "Human3.6M-style 3D annotations (see docs/PUBLIC_DATASET_ADAPTERS.md), "
+                "or use --backend torch. No fake targets are used."
+            )
+        ckpt = B.train_lifting(X, Y, epochs=(200 if args.epochs == 300 else args.epochs))
+        B.save_ckpt(ckpt, out)
+        print("[baseline] lifting = linear 2D->3D regression")
+        print(f"  frames: {len(X)}   in={ckpt['in_dim']} out={ckpt['out_dim']}\n  saved {out}")
+        print(note)
+        return
 
     if args.model == "action":
+        feats, labels, ids = B.build_clip_dataset(train_rows, kp)
+        if len(feats) < 2:
+            raise SystemExit(
+                f"action: need ≥2 labelled clips with keypoints (got {len(feats)}). "
+                "Prepare a dataset + extract keypoints first."
+            )
         ckpt = B.train_action(feats, labels, epochs=args.epochs, lr=args.lr)
-        present = sorted(set(labels))
         print(f"[baseline] action = softmax regression over {len(feats[0])} pooled feats")
-        print(f"  clips: {len(feats)}   classes present: {present}")
-        print(f"  train top-1 accuracy: {ckpt['train_acc'] * 100:.1f}%")
-    else:  # intent
-        ckpt = B.train_intent(feats, labels, epochs=args.epochs, lr=args.lr)
-        n_pos = sum(1 for l in labels if l == "handoff")
-        print(f"[baseline] intent = logistic regression (handoff vs rest)")
-        print(f"  clips: {len(feats)}   positives (handoff): {n_pos}")
+        print(f"  clips: {len(feats)}   classes present: {sorted(set(labels))}")
+        print(f"  train top-1 accuracy: {ckpt['train_acc'] * 100:.1f}%\n  saved {out}")
+        B.save_ckpt(ckpt, out)
+        print(note)
+        return
 
+    # intent
+    feats, y, ids = B.build_intent_dataset(train_rows, kp)
+    if len(feats) < 2 or len(set(y)) < 2:
+        raise SystemExit(
+            f"intent: need ≥2 clips of BOTH classes with keypoints (got {len(feats)} "
+            f"clips, classes={sorted(set(y))}). Handover datasets (HOH/H2O) supply "
+            "positives; pair them with non-handover negatives — see "
+            "docs/PUBLIC_DATASET_ADAPTERS.md. No fake labels are used."
+        )
+    ckpt = B.train_intent(feats, y, epochs=args.epochs, lr=args.lr)
+    print("[baseline] intent = logistic regression (handoff vs non_handoff)")
+    print(f"  clips: {len(feats)}   positives: {sum(y)}   negatives: {len(y) - sum(y)}")
     B.save_ckpt(ckpt, out)
-    print(f"  saved {out}")
-    print(f"  note: baseline checkpoints are JSON (portable, no torch). Evaluate with the")
-    print(f"        matching eval/ script using --weights {out}")
+    print(f"  saved {out}\n{note}")
 
 
 # --------------------------------------------------------------------------- #

@@ -114,20 +114,68 @@ def clip_feature(frames: List[dict]) -> List[float]:
     )  # 17*4 + 6 = 74
 
 
+def _clip_id(row) -> str:
+    """Support both the self-recorded manifest (clip_id) and the normalized
+    public-dataset manifest (sample_id)."""
+    return row.get("clip_id") or row.get("sample_id") or ""
+
+
+def _action_of(row) -> str:
+    """Prefer action_label (normalized manifest), fall back to label."""
+    return (row.get("action_label") or "").strip() or (row.get("label") or "unlabeled")
+
+
 def build_clip_dataset(rows, keypoints_dir, require_label=True):
     """Return (feats, labels, clip_ids) for clips that have keypoints."""
     feats, labels, ids = [], [], []
     for r in rows:
-        frames = load_frames(keypoints_dir, r["clip_id"])
+        cid = _clip_id(r)
+        frames = load_frames(keypoints_dir, cid)
         if not frames:
             continue
-        lab = r.get("label", "unlabeled")
+        lab = _action_of(r)
         if require_label and lab not in ACTIONS:
             continue
         feats.append(clip_feature(frames))
         labels.append(lab)
-        ids.append(r["clip_id"])
+        ids.append(cid)
     return feats, labels, ids
+
+
+def intent_target(row, has_intent_col: bool):
+    """Return 1 (handoff) / 0 (non_handoff) / None (unknown → skip).
+
+    With a normalized manifest (intent_label column present) we trust intent_label
+    and SKIP unknowns — we never fabricate negatives for non-handover datasets. For
+    the self-recorded manifest (no intent_label column) every action is usable:
+    handoff = positive, everything else = negative.
+    """
+    if has_intent_col:
+        il = (row.get("intent_label") or "").strip()
+        if il == "handoff":
+            return 1
+        if il == "non_handoff":
+            return 0
+        return None  # unknown → skip
+    return 1 if _action_of(row) == "handoff" else 0
+
+
+def build_intent_dataset(rows, keypoints_dir):
+    """Return (feats, y, ids) for intent training (handoff vs non_handoff)."""
+    has_intent_col = any("intent_label" in r for r in rows)
+    feats, y, ids = [], [], []
+    for r in rows:
+        cid = _clip_id(r)
+        frames = load_frames(keypoints_dir, cid)
+        if not frames:
+            continue
+        t = intent_target(r, has_intent_col)
+        if t is None:
+            continue
+        feats.append(clip_feature(frames))
+        y.append(t)
+        ids.append(cid)
+    return feats, y, ids
 
 
 # --------------------------------------------------------------------------- #
@@ -209,10 +257,10 @@ def predict_action(ckpt, feat) -> str:
 # --------------------------------------------------------------------------- #
 # intent — binary logistic regression (handoff vs rest)
 # --------------------------------------------------------------------------- #
-def train_intent(feats, labels, epochs=400, lr=0.5, l2=1e-3):
+def train_intent(feats, y, epochs=400, lr=0.5, l2=1e-3):
     mean, std = fit_standardizer(feats)
     X = [standardize(f, mean, std) for f in feats]
-    Y = [1.0 if l == "handoff" else 0.0 for l in labels]
+    Y = [float(v) for v in y]
     D, N = len(X[0]), len(X)
     w = [0.0] * D
     b = 0.0
@@ -261,6 +309,79 @@ def trajectory_sequences(rows, keypoints_dir, t_in=10, horizon=30, step=5):
             pred = [[last[0] + vx * (k + 1), last[1] + vy * (k + 1)] for k in range(horizon)]
             seqs.append({"pred": pred, "gt": gt})
     return seqs
+
+
+# --------------------------------------------------------------------------- #
+# pose lifting — linear 2D→3D baseline (needs 3D targets, e.g. H3WB)
+# --------------------------------------------------------------------------- #
+def build_lifting_dataset(rows, keypoints_dir):
+    """Per-frame (2D[34], 3D[51]) pairs for frames that carry `body_3d` targets.
+
+    Our keypoints JSON only has 2D by default; H3WB-style data provides 3D. The
+    H3WB adapter / your converter should write frames with a `body_3d` field
+    ([17][x,y,z]). If none are present, lifting training fails gracefully.
+    """
+    X, Y = [], []
+    for r in rows:
+        frames = load_frames(keypoints_dir, _clip_id(r))
+        if not frames:
+            continue
+        for fr in frames:
+            j3d = fr.get("body_3d")
+            if not j3d or len(j3d) < 17:
+                continue
+            X.append([c for kp in fr["body"][:17] for c in kp[:2]])      # 34
+            Y.append([c for kp in j3d[:17] for c in kp[:3]])             # 51
+    return X, Y
+
+
+def train_lifting(X, Y, epochs=200, lr=0.1, l2=1e-3):
+    mean, std = fit_standardizer(X)
+    Xs = [standardize(x, mean, std) for x in X]
+    D, O, N = len(Xs[0]), len(Y[0]), len(Xs)
+    W = [[0.0] * D for _ in range(O)]
+    b = [0.0] * O
+    for _ in range(epochs):
+        gW = [[0.0] * D for _ in range(O)]
+        gb = [0.0] * O
+        for x, y in zip(Xs, Y):
+            for o in range(O):
+                pred = sum(W[o][i] * x[i] for i in range(D)) + b[o]
+                err = pred - y[o]
+                gb[o] += err
+                for i in range(D):
+                    gW[o][i] += err * x[i]
+        for o in range(O):
+            b[o] -= lr * gb[o] / N
+            for i in range(D):
+                W[o][i] -= lr * (gW[o][i] / N + l2 * W[o][i])
+    return {"backend": "baseline", "model": "lifting", "kind": "linear_regression",
+            "feat_mean": mean, "feat_std": std, "W": W, "b": b, "in_dim": D, "out_dim": O}
+
+
+# --------------------------------------------------------------------------- #
+# hand–object interaction feature placeholders (HOI4D / DexYCB)
+# --------------------------------------------------------------------------- #
+def hand_object_features(frame) -> List[float]:
+    """Placeholder hand-object features: [hand_present, hand_spread, hand_obj_dist].
+
+    `hand_obj_dist` is computed only if the frame carries an `object` field with a
+    normalized `center` [x, y] (as HOI4D/DexYCB adapters could populate); otherwise
+    it is 0.0. This is a documented placeholder for richer HOI features — see
+    docs/PUBLIC_DATASET_ADAPTERS.md.
+    """
+    hand = frame.get("hand_right") or []
+    present = 1.0 if hand else 0.0
+    spread = 0.0
+    if hand:
+        wx, wy = hand[0][0], hand[0][1]
+        spread = sum(math.hypot(p[0] - wx, p[1] - wy) for p in hand) / len(hand)
+    dist = 0.0
+    obj = frame.get("object")
+    if obj and obj.get("center") and hand:
+        cx, cy = obj["center"][0], obj["center"][1]
+        dist = math.hypot(hand[0][0] - cx, hand[0][1] - cy)
+    return [present, spread, dist]
 
 
 # --------------------------------------------------------------------------- #

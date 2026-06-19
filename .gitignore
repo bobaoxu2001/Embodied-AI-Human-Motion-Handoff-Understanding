@@ -16,6 +16,8 @@ backend/uploads/
 data/raw/
 data/external/
 data/processed/
+data/manifests/
+*.TODO.md
 *.mp4
 *.mov
 *.avi

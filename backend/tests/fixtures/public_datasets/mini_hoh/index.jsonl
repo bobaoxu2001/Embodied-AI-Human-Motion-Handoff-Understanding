@@ -1,0 +1,3 @@
+{"sample_id": "hoh_s01_001", "subject_id": "s01", "object_name": "cup", "camera_view": "cam0", "fps": 30, "num_frames": 60}
+{"sample_id": "hoh_s02_002", "subject_id": "s02", "object_name": "bottle", "camera_view": "cam0", "fps": 30, "num_frames": 60}
+{"sample_id": "hoh_s03_003", "subject_id": "s03", "object_name": "box", "camera_view": "cam1", "fps": 30, "num_frames": 72}

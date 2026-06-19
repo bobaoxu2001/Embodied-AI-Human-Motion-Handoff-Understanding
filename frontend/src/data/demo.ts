@@ -199,6 +199,21 @@ export const DATASET_SOURCES = [
   { title: "Ego4D-inspired egocentric", sub: "first-person video understanding", clips: "planned extension", tag: "planned", accent: "#ff8a3d", border: "#3a2a14", iconBg: "#1a1208", glyph: "EGO" },
 ];
 
+// Public-dataset route (no self-recording). Status labels are honest: every set
+// requires manual download under its own license; nothing is redistributed.
+export const PUBLIC_DATASETS = [
+  { name: "HOH / H2O", role: "handover benchmark (positive handoff intent)", accent: "#3ddc97",
+    tags: ["requires manual download", "registration / EULA", "not redistributed"] },
+  { name: "HOI4D / DexYCB", role: "hand-object interaction (pretrain / features)", accent: "#9b7cff",
+    tags: ["requires manual download", "registration / EULA", "metadata-only integration", "not redistributed"] },
+  { name: "H3WB / Human3.6M", role: "2D→3D pose lifting", accent: "#4d9fff",
+    tags: ["requires manual download", "registration / EULA", "not redistributed"] },
+  { name: "InterHand2.6M", role: "hand-pose pretraining", accent: "#4d9fff",
+    tags: ["requires manual download", "CC BY-NC", "not redistributed"] },
+  { name: "EPIC-KITCHENS / Sth-Sth V2", role: "action recognition fallback", accent: "#ff8a3d",
+    tags: ["requires manual download", "CC BY-NC / academic", "not redistributed"] },
+];
+
 export const CAPTURE_PROTOCOL = [
   { k: "Cameras", v: "2–3 units · time-synced · 1280×720 @ 30fps · calibrated intrinsics+extrinsics" },
   { k: "Geometry", v: "front + 45° oblique (+ optional side) · subject ~2.0 m · height ~1.1 m" },

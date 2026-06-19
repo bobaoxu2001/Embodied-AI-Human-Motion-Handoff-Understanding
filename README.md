@@ -239,6 +239,50 @@ see [DEPLOYMENT_NOTES.md](docs/DEPLOYMENT_NOTES.md).
 
 ---
 
+## Using Public Datasets Instead of Self-Recording
+
+Prefer not to record your own clips? Train on **official public datasets** via the adapters
+in `backend/datasets/`. Nothing is downloaded automatically and **no raw data is
+redistributed** — you download manually under each dataset's license, then the adapter
+converts its metadata into the project's normalized manifest. Full guides:
+[NO_SELF_RECORDING_PLAN.md](docs/NO_SELF_RECORDING_PLAN.md),
+[PUBLIC_DATASET_ADAPTERS.md](docs/PUBLIC_DATASET_ADAPTERS.md),
+[DATASET_DOWNLOAD_MANUAL.md](docs/DATASET_DOWNLOAD_MANUAL.md).
+
+**Recommended order**
+1. **HOH** or **H2O** — handover / handoff intent (positive samples).
+2. **H3WB / Human3.6M** — 2D→3D pose lifting.
+3. **HOI4D / DexYCB** — hand-object pretraining (+ InterHand2.6M for hand pose).
+
+**Prepare a dataset (after manual download into `data/external/<name>/`):**
+
+```bash
+cd backend && source .venv/bin/activate
+# inspect structure + official link + license (writes nothing)
+python scripts/prepare_public_dataset.py --dataset hoh   --root data/external/hoh   --out data/manifests/hoh_manifest.csv   --dry-run
+# build the normalized manifest from your metadata index
+python scripts/prepare_public_dataset.py --dataset hoh   --root data/external/hoh   --out data/manifests/hoh_manifest.csv
+python scripts/prepare_public_dataset.py --dataset h3wb  --root data/external/h3wb  --out data/manifests/h3wb_manifest.csv  --metadata-only
+python scripts/prepare_public_dataset.py --dataset hoi4d --root data/external/hoi4d --out data/manifests/hoi4d_manifest.csv --dry-run
+```
+
+**Then train/eval baselines on the normalized manifest** (needs keypoints — extract from
+the dataset's RGB with `extract_keypoints.py`, or convert its pose annotations):
+
+```bash
+python ml/train.py --model intent --manifest data/manifests/hoh_manifest.csv --keypoints data/keypoints --out ml/weights/intent_baseline.pt
+python eval/handoff_prf.py        --manifest data/manifests/hoh_manifest.csv --keypoints data/keypoints --weights ml/weights/intent_baseline.pt --split test
+```
+
+> **Honesty:** raw datasets are **not included**; each requires registration/EULA. Adapters
+> map handover sets (HOH/H2O) to **positive** handoff intent and leave non-handover sets'
+> intent **unknown** (never faked as negatives) — so intent training needs both a handover
+> source and a non-handover source. **Do not claim training on any dataset until you have
+> actually run the scripts** on the prepared manifest. Everything else remains demo-mode
+> simulated.
+
+---
+
 ## Dataset & evaluation tooling
 
 Runnable end-to-end with the standard library (OpenCV/MediaPipe optional):

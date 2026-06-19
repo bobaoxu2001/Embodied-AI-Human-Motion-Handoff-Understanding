@@ -64,10 +64,12 @@ def measured_pairs(manifest, keypoints, weights, split):
     rows = B.rows_for_split(B.read_manifest(manifest), split)
     pairs = []
     for r in rows:
-        frames = B.load_frames(keypoints, r["clip_id"])
-        if not frames or r.get("label") not in ckpt["actions"]:
+        cid = r.get("clip_id") or r.get("sample_id")
+        lab = (r.get("action_label") or "").strip() or r.get("label")
+        frames = B.load_frames(keypoints, cid)
+        if not frames or lab not in ckpt["actions"]:
             continue
-        pairs.append((r["label"], B.predict_action(ckpt, B.clip_feature(frames))))
+        pairs.append((lab, B.predict_action(ckpt, B.clip_feature(frames))))
     if not pairs:
         raise SystemExit("no labelled clips with keypoints in this split.")
     return pairs, ckpt["actions"]

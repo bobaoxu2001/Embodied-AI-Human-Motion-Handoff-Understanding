@@ -28,15 +28,18 @@ def measured(manifest, keypoints, weights, split):
     if ckpt.get("model") != "intent":
         raise SystemExit(f"--weights is not an intent checkpoint ({ckpt.get('model')}).")
     rows = B.rows_for_split(B.read_manifest(manifest), split)
+    has_intent_col = any("intent_label" in r for r in rows)
     data = []
     for r in rows:
-        frames = B.load_frames(keypoints, r["clip_id"])
+        frames = B.load_frames(keypoints, r.get("clip_id") or r.get("sample_id"))
         if not frames:
             continue
-        target = 1 if r.get("label") == "handoff" else 0
-        data.append((target, B.predict_intent_score(ckpt, B.clip_feature(frames))))
+        t = B.intent_target(r, has_intent_col)
+        if t is None:  # unknown intent → skip (never fabricated)
+            continue
+        data.append((t, B.predict_intent_score(ckpt, B.clip_feature(frames))))
     if not data:
-        raise SystemExit("no clips with keypoints in this split.")
+        raise SystemExit("no clips with usable intent labels + keypoints in this split.")
     return data
 
 

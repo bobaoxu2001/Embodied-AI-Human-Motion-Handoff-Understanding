@@ -3,6 +3,7 @@ import {
   CLASS_DIST,
   DATASET_SOURCES,
   FAILURE_CASES,
+  PUBLIC_DATASETS,
   SPLIT_INFO,
 } from "../data/demo";
 import { ReadinessPanel } from "../components/ReadinessPanel";
@@ -14,6 +15,39 @@ export function DatasetEval() {
       <div className="mb-6">
         <ReadinessPanel />
       </div>
+
+      {/* public dataset route — no self-recording required */}
+      <div className="mb-6 border border-line-accent bg-[#0a111c] rounded-[12px] p-[18px]">
+        <div className="flex items-center justify-between mb-1">
+          <span className="font-mono text-[10px] tracking-[0.12em] uppercase text-signal">
+            public dataset route — no self-recording required
+          </span>
+          <span className="font-mono text-[10px] text-faint">adapters · backend/datasets/</span>
+        </div>
+        <div className="text-[11.5px] text-faint mb-[14px]">
+          Train on official public datasets instead of recording. Each is downloaded
+          manually under its own license; this repo never redistributes raw data.
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[10px]">
+          {PUBLIC_DATASETS.map((d) => (
+            <div key={d.name} className="border border-line-strong bg-deep rounded-[10px] px-[13px] py-[11px]">
+              <div className="text-[13px] font-semibold" style={{ color: d.accent }}>{d.name}</div>
+              <div className="text-[11.5px] text-mute2 mb-2 leading-[1.4]">{d.role}</div>
+              <div className="flex flex-wrap gap-[5px]">
+                {d.tags.map((t) => (
+                  <span key={t} className="font-mono text-[9px] px-[6px] py-[2px] rounded-[4px] text-faint border border-line-soft bg-[#0b0f15]">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-[12px] font-mono text-[10px] text-faint2">
+          prepare: <span className="text-faint">python scripts/prepare_public_dataset.py --dataset hoh --root data/external/hoh --out data/manifests/hoh_manifest.csv --dry-run</span> · see docs/PUBLIC_DATASET_ADAPTERS.md
+        </div>
+      </div>
+
       <div className="font-mono text-[10px] tracking-[0.12em] uppercase text-faint mb-3">
         data sources
       </div>
