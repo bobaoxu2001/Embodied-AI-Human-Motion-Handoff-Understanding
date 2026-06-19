@@ -27,7 +27,7 @@ behind the same API with **no frontend changes**.
 | Screen | Route | Purpose |
 |---|---|---|
 | **Overview** | `/` | Landing / value prop, live hero visualization |
-| **Video analysis** | `/analyze` | Play a clip with skeleton/hand/bbox/trajectory overlays + live per-frame inference cards, draggable timeline, **upload-with-demo-fallback** |
+| **Video analysis** | `/analyze` | Play a clip with skeleton/hand/bbox/trajectory overlays + live per-frame inference cards, draggable timeline, scenario selector, and **upload your own video for real client-side pose inference** (MediaPipe, in-browser) |
 | **3D pose viewer** | `/pose` | Reconstructed 3D skeleton, camera orbit controls, frame scrubber |
 | **Model inspector** | `/inspector` | Architecture graph, metrics, deployment status, latency budget |
 | **Model card** | `/model-card` | Per-model architecture, training config, intended use, limitations — also at [docs/MODEL_CARD.md](docs/MODEL_CARD.md) and `GET /api/model/card` |
@@ -106,8 +106,12 @@ npm run dev
 ```
 
 Open the app, click **Launch dashboard →**, and scrub the timeline. The frontend works
-**even if the backend is down** — it falls back to a built-in demo engine. Upload a clip
-on the *Video analysis* page to exercise the `POST /api/analyze-video` path.
+**even if the backend is down** — it falls back to a built-in demo engine. On the
+*Video analysis* page, **upload your own video** to run **real 2D body & hand pose
+inference in the browser** (MediaPipe / WASM — the video never leaves your device); the
+overlay and action/handoff cards then reflect the real detection (action & intent are
+honest heuristics over the real pose, labelled as such). This runs on the static
+deployment too, with no backend required.
 
 ### 3) Demo mode is the default
 

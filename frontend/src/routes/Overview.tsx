@@ -1,6 +1,23 @@
 import { useNavigate } from "react-router-dom";
 import { Logo } from "../components/Logo";
 import { LabBackground } from "../components/LabBackground";
+import { DATASET_STATS } from "../data/demo";
+
+// Why-this-matters / project background (#4) — HRI scenario + value.
+const BACKGROUND = [
+  {
+    t: "The problem",
+    d: "For a robot to take an object from a person safely, it must read intent before contact — is the human offering the object, or just holding it? Misreading a handoff means a dropped object or an unsafe grab.",
+  },
+  {
+    t: "The approach",
+    d: "Track 3D body & hand pose from a single RGB camera, recognize the manipulation action, forecast where the hand is going, and fuse those cues into a calibrated handoff-intent signal that gates a concrete robot action.",
+  },
+  {
+    t: "Why it matters",
+    d: "Fluent human→robot handoffs underpin warehouse pick-assist, lab automation, assistive/home robotics, and collaborative manufacturing — a core embodied-AI capability for human-robot teams.",
+  },
+];
 
 const BADGES = [
   { t: "3D Vision", c: "#cfe0ff", bg: "#0e1826", b: "#1c2c44" },
@@ -108,8 +125,7 @@ export function Overview() {
           </div>
           <div className="mt-[14px] font-mono text-[10.5px] text-faint flex items-center gap-[7px]">
             <span className="w-[6px] h-[6px] rounded-[2px] bg-warn" />
-            demo-mode · simulated inference on a 150-clip MVP set — not production
-            benchmarks
+            demo-mode · {DATASET_STATS.qualifier}
           </div>
         </div>
 
@@ -189,8 +205,28 @@ export function Overview() {
         </div>
       </div>
 
+      {/* primary CTA — try it with your own video (#2) */}
+      <div className="max-w-[1280px] mx-auto px-10 pt-2 pb-[10px]">
+        <div className="rounded-[14px] border border-line-accent bg-[#0a111c] px-6 py-[22px] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="text-[19px] font-semibold tracking-[-0.01em]">
+              Try it with your own video
+            </div>
+            <div className="text-[13.5px] text-muted mt-1">
+              Runs real 2D body &amp; hand pose detection <span className="text-ink">in your browser</span> (MediaPipe) — your video never leaves your device.
+            </div>
+          </div>
+          <button
+            onClick={() => navigate("/analyze", { state: { openUpload: true } })}
+            className="flex-none bg-signal border border-signal text-[#06121f] text-[14px] font-semibold px-[22px] py-[12px] rounded-lg cursor-pointer hover:brightness-110 transition"
+          >
+            ↑ Upload &amp; analyze →
+          </button>
+        </div>
+      </div>
+
       {/* pipeline ribbon */}
-      <div className="max-w-[1280px] mx-auto px-10 pt-[18px] pb-[70px]">
+      <div className="max-w-[1280px] mx-auto px-10 pt-[18px] pb-[28px]">
         <div className="font-mono text-[10.5px] tracking-[0.12em] uppercase text-faint mb-[14px]">
           inference pipeline
         </div>
@@ -210,6 +246,37 @@ export function Overview() {
               <div className="text-[12px] text-mute2 leading-[1.4]">{p.d}</div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* why this matters / project background (#4) */}
+      <div className="border-t border-line">
+        <div className="max-w-[1280px] mx-auto px-10 py-[44px]">
+          <div className="font-mono text-[10.5px] tracking-[0.12em] uppercase text-faint mb-[18px]">
+            why this matters
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-[18px]">
+            {BACKGROUND.map((b) => (
+              <div key={b.t} className="rounded-[12px] border border-line-strong bg-panel px-5 py-[18px]">
+                <div className="text-[15px] font-semibold mb-2 tracking-[-0.01em]">{b.t}</div>
+                <p className="text-[13px] leading-[1.6] text-muted m-0">{b.d}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-[22px] flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[11px] text-faint">
+            <span>built for an ML Engineer Intern role · robotics / embodied AI</span>
+            <a
+              href="https://github.com/bobaoxu2001/Embodied-AI-Human-Motion-Handoff-Understanding"
+              target="_blank"
+              rel="noreferrer"
+              className="text-signal hover:underline"
+            >
+              ↗ source on GitHub
+            </a>
+            <button onClick={() => navigate("/model-card")} className="text-muted hover:text-ink cursor-pointer bg-transparent border-0 p-0 font-mono text-[11px]">
+              model card →
+            </button>
+          </div>
         </div>
       </div>
     </div>

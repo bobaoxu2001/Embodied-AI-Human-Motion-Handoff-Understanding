@@ -1,14 +1,27 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { usePlayback } from "../state/playback";
 import { derive } from "../lib/demoEngine";
-import { SCENARIOS, TOTAL_FRAMES, getScenario } from "../data/demo";
+import { ROBOT_MAP, SCENARIOS, TOTAL_FRAMES, getScenario } from "../data/demo";
 import { SkeletonOverlay } from "../components/SkeletonOverlay";
+import { LivePoseOverlay } from "../components/LivePoseOverlay";
 import { LabBackground } from "../components/LabBackground";
 import { ScrubBar } from "../components/ScrubBar";
 import { PlayButton } from "../components/PlayButton";
 import { useScrub } from "../hooks/useScrub";
 import { useStream } from "../hooks/useStream";
+import { useLivePose } from "../hooks/useLivePose";
 import { api } from "../lib/api";
+
+const ACT_COLOR: Record<string, string> = {
+  idle: "#8893a3",
+  reaching: "#4d9fff",
+  grasping: "#9b7cff",
+  handoff: "#3ddc97",
+  placing: "#ff8a3d",
+  pointing: "#ffd24d",
+};
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 type UploadState = "demo" | "analyzing" | "analyzed" | "fallback";
 
@@ -33,6 +46,34 @@ export function VideoAnalysis() {
   const [state, setState] = useState<UploadState>("demo");
   const [analysisId, setAnalysisId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const location = useLocation();
+
+  // Real client-side inference (MediaPipe, browser) runs on an uploaded video.
+  const [videoEl, setVideoEl] = useState<HTMLVideoElement | null>(null);
+  const live = useLivePose(videoEl, !!videoUrl);
+  const lr = live.result;
+  const realActive = !!videoUrl && live.status === "ready" && !!lr;
+
+  // Opened from the homepage "Upload & analyze" CTA → pop the file picker.
+  useEffect(() => {
+    if ((location.state as { openUpload?: boolean } | null)?.openUpload) {
+      inputRef.current?.click();
+    }
+  }, [location.state]);
+
+  // Inference-card view values: real (from MediaPipe) when active, else demo.
+  const actionLabel = realActive ? cap(lr!.action) : d.actionLabel;
+  const actionColor = realActive ? ACT_COLOR[lr!.action] ?? "#cdd6e2" : d.actionColor;
+  const actionConfStr = realActive ? lr!.actionConf.toFixed(2) : d.actionConf;
+  const handoffConf = realActive ? lr!.intentConf : d.handoffConf;
+  const intentDetected = realActive ? lr!.intentDetected : d.intentDetected;
+  const chipColor = realActive ? actionColor : d.chipColor;
+  const activeChips: Record<string, boolean> = realActive
+    ? Object.fromEntries(CHIP_KEYS.map((k) => [k, k === lr!.action]))
+    : d.activeChips;
+  const [robotAction, robotActionSub] = realActive
+    ? ROBOT_MAP[lr!.action] ?? ROBOT_MAP.idle
+    : [d.robotAction, d.robotActionSub];
 
   const seekFrac = (f: number) => seekTo(f * (TOTAL_FRAMES - 1));
   const onTimeline = useScrub(seekFrac);
@@ -51,14 +92,19 @@ export function VideoAnalysis() {
     }
   }
 
-  const statusLine =
-    state === "analyzing"
-      ? "analyzing on backend…"
-      : state === "analyzed"
-      ? `backend demo inference · ${analysisId}`
-      : state === "fallback"
-      ? "backend offline · local demo fallback"
-      : "demo clip · simulated inference";
+  const statusLine = realActive
+    ? `real inference · browser MediaPipe · ${lr!.fps} fps`
+    : videoUrl && live.status === "loading"
+    ? "loading MediaPipe model (first run downloads ~5MB)…"
+    : videoUrl && live.status === "error"
+    ? "MediaPipe failed to load · showing demo overlay"
+    : state === "analyzing"
+    ? "analyzing on backend…"
+    : state === "analyzed"
+    ? `backend demo inference · ${analysisId}`
+    : state === "fallback"
+    ? "backend offline · local demo fallback"
+    : "demo clip · simulated inference";
 
   return (
     <div>
@@ -95,14 +141,22 @@ export function VideoAnalysis() {
               <span className="w-[6px] h-[6px] rounded-full bg-rec animate-blink" />
               {fileName} · 1280×720
             </span>
-            <span className="hidden sm:inline">overlays: skeleton · hands · bbox · traj</span>
+            {realActive ? (
+              <span className="flex items-center gap-[6px] text-good">
+                <span className="w-[6px] h-[6px] rounded-full bg-good animate-pulse-fast" />
+                REAL · MediaPipe (browser) · {lr!.fps}fps
+              </span>
+            ) : (
+              <span className="hidden sm:inline">overlays: skeleton · hands · bbox · traj</span>
+            )}
           </div>
 
           <div className="relative aspect-[16/10]">
             {videoUrl ? (
               <video
+                ref={setVideoEl}
                 src={videoUrl}
-                className="absolute inset-0 w-full h-full object-cover opacity-90"
+                className="absolute inset-0 w-full h-full object-contain opacity-90"
                 autoPlay
                 loop
                 muted
@@ -112,9 +166,9 @@ export function VideoAnalysis() {
               <LabBackground />
             )}
             <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(180deg,#0a0d1200,#0a0d1288)" }} />
-            <SkeletonOverlay d={d} />
+            {realActive ? <LivePoseOverlay r={lr!} /> : <SkeletonOverlay d={d} />}
             <div className="absolute left-3 top-[34px] font-mono text-[9.5px]" style={{ color: "#4d9fff99" }}>
-              {d.frameLabel}
+              {realActive ? "live · browser inference" : d.frameLabel}
             </div>
             {/* upload affordance */}
             <button
@@ -170,21 +224,21 @@ export function VideoAnalysis() {
               current action
             </div>
             <div className="flex items-baseline justify-between">
-              <span className="text-[27px] font-semibold tracking-[-0.01em]" style={{ color: d.actionColor }}>
-                {d.actionLabel}
+              <span className="text-[27px] font-semibold tracking-[-0.01em]" style={{ color: actionColor }}>
+                {actionLabel}
               </span>
-              <span className="font-mono text-[14px] text-muted">{d.actionConf}</span>
+              <span className="font-mono text-[14px] text-muted">{actionConfStr}</span>
             </div>
             <div className="flex gap-[5px] mt-3">
               {CHIP_KEYS.map((k) => {
-                const on = d.activeChips[k];
+                const on = activeChips[k];
                 return (
                   <span
                     key={k}
                     className="font-mono text-[10px] px-2 py-1 rounded-[5px]"
                     style={
                       on
-                        ? { background: d.chipColor + "22", color: d.chipColor, border: `1px solid ${d.chipColor}55` }
+                        ? { background: chipColor + "22", color: chipColor, border: `1px solid ${chipColor}55` }
                         : { background: "#0e131a", color: "#3f4a59", border: "1px solid #1a222e" }
                     }
                   >
@@ -199,15 +253,18 @@ export function VideoAnalysis() {
           <div className="border border-line-green bg-[#0b140f] rounded-[12px] px-4 py-[15px] animate-glow">
             <div className="flex items-center justify-between mb-[10px]">
               <span className="font-mono text-[10px] tracking-[0.1em] uppercase text-good">
-                handoff intent
+                handoff intent{realActive ? " · heuristic" : ""}
               </span>
-              <span className="font-mono text-[10.5px]" style={{ color: d.intentStatusColor }}>
-                {d.intentStatus}
+              <span
+                className="font-mono text-[10.5px]"
+                style={{ color: intentDetected ? "#3ddc97" : "#5c6675" }}
+              >
+                {intentDetected ? "INTENT DETECTED" : "monitoring"}
               </span>
             </div>
             <div className="flex items-baseline gap-[9px]">
               <span className="font-mono text-[38px] font-semibold leading-none text-white">
-                {d.handoffConfStr}
+                {handoffConf.toFixed(2)}
               </span>
               <span className="text-[13px] text-muted">confidence</span>
             </div>
@@ -215,7 +272,7 @@ export function VideoAnalysis() {
               <div
                 className="h-full rounded-[5px]"
                 style={{
-                  width: `${d.handoffConfPct}%`,
+                  width: `${Math.round(handoffConf * 100)}%`,
                   background: "linear-gradient(90deg,#3ddc97,#7fffcf)",
                   transition: "width .2s linear",
                 }}
@@ -248,8 +305,8 @@ export function VideoAnalysis() {
                 </svg>
               </div>
               <div>
-                <div className="text-[15.5px] font-semibold text-ink">{d.robotAction}</div>
-                <div className="text-[11.5px] text-faint font-mono">{d.robotActionSub}</div>
+                <div className="text-[15.5px] font-semibold text-ink">{robotAction}</div>
+                <div className="text-[11.5px] text-faint font-mono">{robotActionSub}</div>
               </div>
             </div>
           </div>

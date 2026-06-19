@@ -7,6 +7,17 @@ import type { Segment } from "../types";
 export const TOTAL_FRAMES = 320;
 export const FPS = 30;
 
+// Single source of truth for the dataset-scale numbers shown across the UI.
+// When the dataset grows or a public set is swapped in, update these here (and
+// the matching prose in docs/) so the homepage / inspector / dataset pages stay
+// consistent and honest. `mode` flips the on-screen qualifier.
+export const DATASET_STATS = {
+  clips: 150,
+  segments: 566,
+  mode: "demo" as "demo" | "production",
+  qualifier: "simulated metrics on a ~150-clip MVP set — not production benchmarks",
+};
+
 export const SEGMENTS: Segment[] = [
   { key: "idle", label: "Idle", start: 0, end: 46, conf: 0.99, color: "#8893a3", bg: "#11151c" },
   { key: "reaching", label: "Reaching", start: 46, end: 120, conf: 0.91, color: "#4d9fff", bg: "#0e1826" },

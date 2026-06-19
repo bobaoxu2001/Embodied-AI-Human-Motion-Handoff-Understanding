@@ -100,9 +100,22 @@ page shows a live stream card. If the socket is unreachable (e.g. the static
 Vercel deploy) the UI stays on its local demo engine — same graceful-degradation
 contract as the REST client.
 
+## Client-side real inference (browser MediaPipe)
+
+The *Video analysis* page can run **real** 2D body+hand pose detection entirely in the
+browser when the user uploads a video: `hooks/useLivePose.ts` lazy-loads
+`@mediapipe/tasks-vision` (WASM, code-split into its own chunk), runs the Pose + Hand
+landmarkers per frame on the `<video>`, and `components/LivePoseOverlay.tsx` draws the
+real landmarks (aligned via a video-intrinsic `viewBox` + `object-contain`). The
+downstream action / handoff-intent values are **honest heuristics over the real pose**
+(the learned stages still need trained weights) and are labelled accordingly in the UI.
+This needs no backend and no upload — the video stays on the device — so it works on the
+static Vercel deploy.
+
 ## Future work
 
-- Real training + int8 ONNX export; replace simulated metrics with measured ones.
+- Train the learned stages so action/intent/trajectory are model-driven (not heuristic),
+  then int8 ONNX export; replace simulated metrics with measured ones.
 - Multi-person tracking + re-identification to fix association id-switches.
 - Egocentric / first-person extension (Ego4D-style).
 - Robot-in-the-loop evaluation of the emitted `robot_action` commands.
