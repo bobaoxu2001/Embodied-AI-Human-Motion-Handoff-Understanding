@@ -18,8 +18,10 @@ from self-recorded clips to **public-dataset adapters**
 1. **Handover / handoff intent → HOH or H2O.** These are the closest to the core task and
    give **positive** handoff samples (giver/receiver). Start here.
 2. **2D→3D pose lifting → H3WB / Human3.6M.** Trains Stage 02 with real 3D supervision.
-3. **Hand-object pretraining → HOI4D / DexYCB.** Rich hand+object pose for the perception
-   front-end and grasp features.
+3. **Hand-object pretraining → HOT3D (recommended) / HOI4D / DexYCB.** HOT3D is egocentric
+   hand-object **3D** tracking (Aria/Quest) and the closest public match to our perception
+   front-end; HOT3D-Clips (WebDataset, 150f/5s) makes a tiny subset trivial — one sequence
+   or a few clips. HOI4D/DexYCB add more hand+object pose + grasp features.
 4. **Hand-pose pretraining → InterHand2.6M.** Optional, for hand realism.
 5. **Action-recognition fallback → EPIC-KITCHENS / Something-Something V2.** Only if you
    need more generic action data.

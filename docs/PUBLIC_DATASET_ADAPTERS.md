@@ -32,6 +32,7 @@ Missing data → a clear error or a `*.TODO.md` report.
 |---|---|---|---|
 | `hoh` | [HOH](https://tars-home.github.io/hohdataset/) | handover benchmark | **handoff** (positive) |
 | `h2o` | [H2O](https://sites.google.com/view/handover-h2o/home) | handover benchmark | **handoff** (positive) |
+| `hot3d` | [HOT3D](https://github.com/facebookresearch/hot3d) | egocentric hand-object 3D (recommended) | unknown (not faked) |
 | `hoi4d` | [HOI4D](https://hoi4d.github.io/) | hand-object pretrain / action | unknown (not faked) |
 | `dexycb` | [DexYCB](https://dex-ycb.github.io/) | hand-object grasp features | unknown (not faked) |
 | `h3wb` | [H3WB](https://github.com/wholebody3d/wholebody3d) | 2D→3D pose lifting | n/a |

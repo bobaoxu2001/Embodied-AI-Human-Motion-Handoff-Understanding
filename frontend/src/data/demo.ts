@@ -204,6 +204,8 @@ export const DATASET_SOURCES = [
 export const PUBLIC_DATASETS = [
   { name: "HOH / H2O", role: "handover benchmark (positive handoff intent)", accent: "#3ddc97",
     tags: ["requires manual download", "registration / EULA", "not redistributed"] },
+  { name: "HOT3D / HOT3D-Clips", role: "egocentric hand-object 3D (recommended)", accent: "#3ddc97",
+    tags: ["requires manual download", "Meta license", "subset OK (1 seq / few clips)", "not redistributed"] },
   { name: "HOI4D / DexYCB", role: "hand-object interaction (pretrain / features)", accent: "#9b7cff",
     tags: ["requires manual download", "registration / EULA", "metadata-only integration", "not redistributed"] },
   { name: "H3WB / Human3.6M", role: "2D→3D pose lifting", accent: "#4d9fff",

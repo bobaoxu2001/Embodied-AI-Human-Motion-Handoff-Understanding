@@ -22,6 +22,7 @@ data for: 3D human pose, hand/body pose, video understanding, human–object int
 
 | Dataset | Official URL | Modality | Relevant task(s) | Size | License / access | Registration | Processing difficulty | Usefulness here | Recommended usage |
 |---|---|---|---|---|---|---|---|---|---|
+| **HOT3D / HOT3D-Clips** | https://github.com/facebookresearch/hot3d | Egocentric multi-view (Aria/Quest) RGB; 3D hand + object pose/shape | Hand-object 3D tracking, hand pose, HOI | ~833 min, 19 subj, 33 obj; Clips ~3832×150f | HOT3D License Agreement (Meta), research | Yes (license; clips on HF) | Medium (Clips subset is easy: WebDataset) | ★★★★★ egocentric hand-object 3D | pretrain / subset experiments |
 | **HOI4D** | https://hoi4d.github.io/ | RGB-D egocentric, 3D hand pose, object pose, segmentation, meshes | HOI, hand pose, action segmentation | ~2.4M RGB-D frames / 4000 seqs | Academic/research (verify on site) | Yes (form) | High (RGB-D + meshes) | ★★★★ HOI + hand-object priors | pretrain / inspiration / subset experiments |
 | **Ego4D / Ego-Exo4D** | https://ego4d-data.org/ · https://ego-exo4d-data.org/ | Egocentric (multimodal) video; Ego-Exo4D adds exocentric | Video understanding, hand-object, forecasting | Thousands of hours (TB) | Ego4D License Agreement (sign → ~48h → AWS creds) | Yes (license agreement) | Very high (huge) | ★★★ egocentric video understanding | inspiration / benchmark (small subset only) |
 | **Human3.6M** | http://vision.imar.ro/human3.6m/ | RGB + 3D mocap (17 joints) | 2D→3D pose lifting | Large (TB) | **Academic use only** EULA | Yes (academic email) | Medium | ★★★★ pose-lifting supervision | train (lifting) / benchmark |
@@ -45,7 +46,10 @@ data for: 3D human pose, hand/body pose, video understanding, human–object int
 2. **H3WB + Human3.6M** — the practical path to real **2D→3D whole-body pose lifting**
    (our Stage 02), including hands. H3WB annotations are light; images sit behind the
    Human3.6M academic EULA.
-3. **HOI4D** — rich **RGB-D human-object interaction** with hand+object pose; strong for
+3. **HOT3D / HOT3D-Clips** — **egocentric hand-object 3D tracking** with hand + object
+   pose; the closest public match to our perception front-end. HOT3D-Clips (WebDataset,
+   150f/5s) makes a tiny subset easy: one sequence or a few clips suffices for a demo.
+4. **HOI4D** — rich **RGB-D human-object interaction** with hand+object pose; strong for
    pretraining the perception front-end and for HOI inspiration.
 4. **DexYCB** — **hand-object grasping** with object 6DoF; good for grasp/approach cues.
 5. **Something-Something V2 / EPIC-KITCHENS / Ego4D** — **video-understanding** and
@@ -66,6 +70,7 @@ lifting supervision, draw **HOI4D/DexYCB** subsets for hand-object pretraining, 
 
 ## Sources
 
+- [HOT3D — GitHub toolkit](https://github.com/facebookresearch/hot3d) · [project page](https://facebookresearch.github.io/hot3d/) (HOT3D-Clips on Hugging Face — link in the README)
 - [HOI4D — project page](https://hoi4d.github.io/) · [paper (arXiv:2203.01577)](https://arxiv.org/abs/2203.01577)
 - [Ego4D](https://ego4d-data.org/) · [Ego-Exo4D](https://ego-exo4d-data.org/) · [code](https://github.com/facebookresearch/Ego4d)
 - [Human3.6M](http://vision.imar.ro/human3.6m/) · [EULA](http://vision.imar.ro/human3.6m/eula.php)

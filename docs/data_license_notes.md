@@ -24,6 +24,7 @@ follow the current terms on each dataset's official page (links in
 
 | Dataset | License (verify on site) | Commercial use? | Access path |
 |---|---|---|---|
+| HOT3D | HOT3D License Agreement (Meta), research | No (assume non-commercial) | Accept license → toolkit URLs; clips via Hugging Face |
 | HOI4D | Academic/research (see site) | No (assume non-commercial) | Request via project page |
 | Ego4D / Ego-Exo4D | Ego4D License Agreement | Restricted; per agreement | Sign agreement → AWS creds (~48h) |
 | Human3.6M | **Academic use only** (EULA) | **No** | Academic-email account + EULA |

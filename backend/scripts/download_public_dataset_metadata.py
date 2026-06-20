@@ -41,6 +41,20 @@ DATASETS = {
         "download": "Follow the download links + form on https://hoi4d.github.io/",
         "metadata_files": {},
     },
+    "hot3d": {
+        "name": "HOT3D / HOT3D-Clips",
+        "urls": ["https://github.com/facebookresearch/hot3d",
+                 "https://facebookresearch.github.io/hot3d/"],
+        "modality": "egocentric multi-view (Aria/Quest) RGB; 3D hand + object pose/shape",
+        "tasks": "hand-object 3D tracking, hand pose, hand-object interaction",
+        "size": "~833 min, 19 subjects, 33 objects (HOT3D-Clips: ~3832 clips, 150f/5s)",
+        "license": "HOT3D License Agreement (Meta) — research; not redistributed",
+        "registration": "Yes (accept license → download URLs; clips via Hugging Face)",
+        "download": ("Toolkit: python3 dataset_downloader_base_main.py -c "
+                     "Hot3DAria_download_urls.json -o ../dataset --sequence_name "
+                     "<SEQ> --data_types all. HOT3D-Clips: Hugging Face (see GitHub README)."),
+        "metadata_files": {},
+    },
     "ego4d": {
         "name": "Ego4D / Ego-Exo4D",
         "urls": ["https://ego4d-data.org/", "https://ego-exo4d-data.org/",

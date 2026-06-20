@@ -251,8 +251,10 @@ converts its metadata into the project's normalized manifest. Full guides:
 
 **Recommended order**
 1. **HOH** or **H2O** — handover / handoff intent (positive samples).
-2. **H3WB / Human3.6M** — 2D→3D pose lifting.
-3. **HOI4D / DexYCB** — hand-object pretraining (+ InterHand2.6M for hand pose).
+2. **HOT3D / HOT3D-Clips** — egocentric hand-object **3D** (closest to our front-end; tiny
+   subset is easy — one sequence or a few WebDataset clips).
+3. **H3WB / Human3.6M** — 2D→3D pose lifting.
+4. **HOI4D / DexYCB** — more hand-object pretraining (+ InterHand2.6M for hand pose).
 
 **Prepare a dataset (after manual download into `data/external/<name>/`):**
 

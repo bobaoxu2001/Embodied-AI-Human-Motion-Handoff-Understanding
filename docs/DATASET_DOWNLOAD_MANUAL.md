@@ -49,6 +49,30 @@ have them. Adapters fill dataset defaults (e.g. HOH → `action_label=handoff`,
 - Index: one row per sequence. `sample_id`, `subject_id` (e.g. `subject-01`), `object_name`,
   `fps`, `num_frames`, `action_label=grasping`. `intent_label` empty.
 
+## HOT3D / HOT3D-Clips (recommended for hand-object)
+- Official toolkit: https://github.com/facebookresearch/hot3d · project: https://facebookresearch.github.io/hot3d/
+- Egocentric multi-view (Project Aria + Quest 3), ~833 min, 19 subjects, 33 rigid objects,
+  with **3D hand + object pose/shape**. License-gated (Meta HOT3D License Agreement).
+- **You do NOT need the full dataset.** Download **one sequence** (or a few HOT3D-Clips):
+
+  ```bash
+  # accept the license to obtain Hot3DAria_download_urls.json, then:
+  python3 dataset_downloader_base_main.py \
+      -c Hot3DAria_download_urls.json -o ../dataset \
+      --sequence_name P0003_c701bd11 --data_types all
+  # HOT3D-Clips (curated subset, WebDataset, 150 frames / 5 s, ~3832 clips):
+  #   download a few .tar shards from Hugging Face (link in the GitHub README)
+  ```
+  Place results under `backend/data/external/hot3d/` (`sequences/` and/or `clips/`).
+- Index: one row per clip/sequence. `sample_id` (clip uid / sequence name), `subject_id`
+  (e.g. `P0003`), `object_name`, `camera_view` (`aria`/`quest`), `fps`, `num_frames`
+  (clips = 150). `action_label`/`intent_label` left empty (tracking, not handover).
+- Keypoints: project the dataset's 3D hand keypoints into our `body`/`hand_right` layout
+  (a per-format TODO), or run `extract_keypoints.py` over the egocentric RGB.
+
+> **Honest project note:** *"For demo, we use 1 HOT3D training sequence or a small number
+> of HOT3D-Clips. The full HOT3D dataset is not required."*
+
 ## H3WB / Human3.6M
 - Official (annotations): https://github.com/wholebody3d/wholebody3d · paper: arXiv:2211.15692
 - Images require a Human3.6M academic account: http://vision.imar.ro/human3.6m/

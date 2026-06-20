@@ -72,6 +72,19 @@ def test_h3wb_caps(tmp_path):
     assert all(r["intent_label"] == "" and r["action_label"] == "" for r in rows)
 
 
+def test_hot3d_hand_object_caps(tmp_path):
+    out = tmp_path / "hot3d.csv"
+    get_adapter("hot3d").build_manifest(_staged("mini_hot3d", tmp_path), out, "subject")
+    rows = read_manifest(out)
+    assert len(rows) == 2
+    for r in rows:
+        assert r["dataset_name"] == "hot3d"
+        assert r["has_hand_pose"] == "1" and r["has_object_pose"] == "1"
+        assert r["has_3d_pose"] == "1"
+        # egocentric hand-object tracking, not a handover set → intent unknown
+        assert r["intent_label"] == "" and r["action_label"] == ""
+
+
 def test_missing_index_raises(tmp_path):
     # empty root, no index, not dry-run/metadata-only → clear error, no fake labels
     with pytest.raises(SystemExit):

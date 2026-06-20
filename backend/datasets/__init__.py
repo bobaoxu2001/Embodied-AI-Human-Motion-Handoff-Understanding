@@ -13,12 +13,13 @@ from .h2o_adapter import H2OAdapter
 from .h3wb_adapter import H3WBAdapter
 from .hoh_adapter import HOHAdapter
 from .hoi4d_adapter import HOI4DAdapter
+from .hot3d_adapter import HOT3DAdapter
 from .interhand_adapter import InterHandAdapter
 from .schema import FIELDS, NormalizedSample, read_manifest, write_manifest
 
 ADAPTERS = {
     cls.name: cls
-    for cls in [HOHAdapter, H2OAdapter, HOI4DAdapter, DexYCBAdapter,
+    for cls in [HOHAdapter, H2OAdapter, HOT3DAdapter, HOI4DAdapter, DexYCBAdapter,
                 H3WBAdapter, InterHandAdapter]
 }
 
