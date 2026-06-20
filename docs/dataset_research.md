@@ -70,7 +70,7 @@ lifting supervision, draw **HOI4D/DexYCB** subsets for hand-object pretraining, 
 
 ## Sources
 
-- [HOT3D — GitHub toolkit](https://github.com/facebookresearch/hot3d) · [project page](https://facebookresearch.github.io/hot3d/) (HOT3D-Clips on Hugging Face — link in the README)
+- [HOT3D — GitHub toolkit](https://github.com/facebookresearch/hot3d) (CVPR 2025) · [project page](https://facebookresearch.github.io/hot3d/) · HOT3D-Clips on Hugging Face: [bop-benchmark/hot3d](https://huggingface.co/datasets/bop-benchmark/hot3d) (full Aria: [projectaria/hot3d](https://huggingface.co/datasets/projectaria/hot3d))
 - [HOI4D — project page](https://hoi4d.github.io/) · [paper (arXiv:2203.01577)](https://arxiv.org/abs/2203.01577)
 - [Ego4D](https://ego4d-data.org/) · [Ego-Exo4D](https://ego-exo4d-data.org/) · [code](https://github.com/facebookresearch/Ego4d)
 - [Human3.6M](http://vision.imar.ro/human3.6m/) · [EULA](http://vision.imar.ro/human3.6m/eula.php)

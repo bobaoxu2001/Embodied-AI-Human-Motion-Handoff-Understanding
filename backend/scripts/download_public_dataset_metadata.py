@@ -42,17 +42,19 @@ DATASETS = {
         "metadata_files": {},
     },
     "hot3d": {
-        "name": "HOT3D / HOT3D-Clips",
+        "name": "HOT3D / HOT3D-Clips (CVPR 2025)",
         "urls": ["https://github.com/facebookresearch/hot3d",
-                 "https://facebookresearch.github.io/hot3d/"],
+                 "https://facebookresearch.github.io/hot3d/",
+                 "https://huggingface.co/datasets/bop-benchmark/hot3d"],
         "modality": "egocentric multi-view (Aria/Quest) RGB; 3D hand + object pose/shape",
         "tasks": "hand-object 3D tracking, hand pose, hand-object interaction",
-        "size": "~833 min, 19 subjects, 33 objects (HOT3D-Clips: ~3832 clips, 150f/5s)",
+        "size": "~833 min, 19 subjects, 33 objects (HOT3D-Clips: 3832 clips, 150f/5s)",
         "license": "HOT3D License Agreement (Meta) — research; not redistributed",
-        "registration": "Yes (accept license → download URLs; clips via Hugging Face)",
-        "download": ("Toolkit: python3 dataset_downloader_base_main.py -c "
-                     "Hot3DAria_download_urls.json -o ../dataset --sequence_name "
-                     "<SEQ> --data_types all. HOT3D-Clips: Hugging Face (see GitHub README)."),
+        "registration": "Yes (accept license → toolkit URLs; clips via Hugging Face)",
+        "download": ("Full seq: python3 dataset_downloader_base_main.py -c "
+                     "Hot3DAria_download_urls.json -o ../dataset --sequence_name <SEQ> "
+                     "--data_types all. Clips: huggingface-cli download bop-benchmark/hot3d "
+                     "--repo-type dataset --include 'test_aria/*' --local-dir ./clips"),
         "metadata_files": {},
     },
     "ego4d": {

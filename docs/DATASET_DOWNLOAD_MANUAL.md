@@ -56,12 +56,18 @@ have them. Adapters fill dataset defaults (e.g. HOH → `action_label=handoff`,
 - **You do NOT need the full dataset.** Download **one sequence** (or a few HOT3D-Clips):
 
   ```bash
-  # accept the license to obtain Hot3DAria_download_urls.json, then:
+  # (A) full sequences — accept the license to get Hot3DAria_download_urls.json, then:
   python3 dataset_downloader_base_main.py \
       -c Hot3DAria_download_urls.json -o ../dataset \
       --sequence_name P0003_c701bd11 --data_types all
-  # HOT3D-Clips (curated subset, WebDataset, 150 frames / 5 s, ~3832 clips):
-  #   download a few .tar shards from Hugging Face (link in the GitHub README)
+
+  # (B) HOT3D-Clips (curated WebDataset subset, 150 frames / 5 s, 3832 clips:
+  #     2804 train / 1028 test; 1983 Aria / 1849 Quest3) — hosted on Hugging Face at
+  #     bop-benchmark/hot3d  (folders: train_aria/ train_quest3/ test_aria/ test_quest3/).
+  #     Grab a SMALL subset, e.g. the test_aria folder (may require `huggingface-cli login`):
+  huggingface-cli download bop-benchmark/hot3d --repo-type dataset \
+      --include "test_aria/*" --local-dir data/external/hot3d/clips
+  # (full HOT3D Aria is also mirrored at the projectaria/hot3d HF dataset)
   ```
   Place results under `backend/data/external/hot3d/` (`sequences/` and/or `clips/`).
 - Index: one row per clip/sequence. `sample_id` (clip uid / sequence name), `subject_id`

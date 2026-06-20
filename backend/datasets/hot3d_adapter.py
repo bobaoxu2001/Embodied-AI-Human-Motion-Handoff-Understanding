@@ -1,18 +1,19 @@
-"""HOT3D — egocentric Hand and Object Tracking in 3D (Meta / Facebook Research).
+"""HOT3D — egocentric Hand and Object Tracking in 3D (Meta / Facebook Research, CVPR 2025).
 
 Official toolkit: https://github.com/facebookresearch/hot3d
 Project page:     https://facebookresearch.github.io/hot3d/
 Multi-view egocentric (Project Aria + Quest 3): ~833 min, 19 subjects, 33 rigid
-objects, with 3D hand + object pose/shape annotations. **HOT3D-Clips** is a curated
-subset in WebDataset format (150 frames / 5 s per clip, ~3832 clips), distributed via
-Hugging Face (see the toolkit README for the exact link).
+objects, with 3D hand + object pose/shape annotations.
+
+**HOT3D-Clips** is a curated WebDataset subset (150 frames / 5 s per clip, 3832 clips:
+2804 train / 1028 test; 1983 Aria / 1849 Quest3), hosted on Hugging Face at
+`bop-benchmark/hot3d` (folders train_aria/ train_quest3/ test_aria/ test_quest3/). The
+full HOT3D (Aria) is also mirrored at `projectaria/hot3d`; full sequences download via the
+toolkit's Hot3DAria_download_urls.json.
 
 This is the closest public dataset to our hand-object perception front-end. It is NOT a
 handover dataset, so intent is left unknown (never faked). Download is license-gated and
-large — obtain it via the official toolkit; this repo never redistributes it.
-
-NOTE: URLs are from the official toolkit/screenshot; re-confirm the exact Hugging Face
-clip link on the GitHub README before downloading.
+large — obtain it via the official toolkit / Hugging Face; this repo never redistributes it.
 """
 
 from .common import DatasetAdapter
